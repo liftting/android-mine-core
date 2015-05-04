@@ -2,6 +2,7 @@ package com.xm.cygcore.view.dataloadview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
@@ -12,6 +13,8 @@ import android.widget.Scroller;
  * Created by wm on 15/4/27.
  */
 public class XmAutoLoadListView extends ListView implements AbsListView.OnScrollListener {
+
+    private static final String TAG = "XmAutoLoadListView";
 
     private Context mContext;
     //    private XmLoadFooterView mLoadFooterView;
@@ -24,7 +27,7 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
 
     private DataLoadingListener mDataLoadingListener;
 
-    private final static float OFFSET_RADIO = 2.2f;
+    private final static float OFFSET_RADIO = 1.6f;
 
 
     public XmAutoLoadListView(Context context) {
@@ -69,27 +72,30 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
                 float yDis = y - mLastY;
                 mLastY = y;
 
-                if (getFirstVisiblePosition() == 0 && yDis > 0) {
+                if (getFirstVisiblePosition() == 0 && (mLoadHeaderView.getCurrentHeight() > 0 || yDis > 0)) {
                     updateHeadViewHeight((int) (yDis / OFFSET_RADIO));
                 }
 
 
                 break;
             case MotionEvent.ACTION_UP:
-                if (mLoadHeaderView.getVisibleHeight() > mHeadViewHeight) {
-                    // all has pull to see
-                    isRefreshing = true;
-                    mLoadHeaderView.updateStateInfo(XmLoadHeaderView.STATE_REFRESH);
+            case MotionEvent.ACTION_CANCEL:
+                if (getFirstVisiblePosition() == 0) {
+                    if (!isRefreshing && mLoadHeaderView.getCurrentHeight() > mHeadViewHeight) {
+                        // all has pull to see
+                        isRefreshing = true;
+                        mLoadHeaderView.updateStateInfo(XmLoadHeaderView.STATE_REFRESH);
 
-                    // call back
-                    if (mDataLoadingListener != null) {
+                        // call back
+                        if (mDataLoadingListener != null) {
 
-                        mDataLoadingListener.onRefresh();
+                            mDataLoadingListener.onRefresh();
+                        }
+
+
                     }
-
-
+                    resetHeaderView();
                 }
-                resetHeaderView();
 
                 break;
         }
@@ -98,24 +104,33 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
     }
 
     private void updateHeadViewHeight(int dis) {
-        mLoadHeaderView.updateHeight(mLoadHeaderView.getVisibleHeight() + dis);
 
-        if(isRefreshing) return;
+        Log.w(TAG, "update head view height:" + mLoadHeaderView.getCurrentHeight());
 
-        if (mLoadHeaderView.getVisibleHeight() >= mHeadViewHeight) {
+        //  在刷新状态时，不可以在继续下拉，要保持当前的高度值，可以进行上滑动操作
+        if (isRefreshing) return;
+
+
+        mLoadHeaderView.updateHeight(mLoadHeaderView.getCurrentHeight() + dis);
+
+
+
+        if (mLoadHeaderView.getCurrentHeight() >= mHeadViewHeight) {
             // release to refresh
             mLoadHeaderView.updateStateInfo(XmLoadHeaderView.STATE_PULLING);
         } else {
             mLoadHeaderView.updateStateInfo(XmLoadHeaderView.STATE_IDEL);
         }
 
+        setSelection(0);
+
     }
 
     private void resetHeaderView() {
-        int height = mLoadHeaderView.getVisibleHeight();
+        int height = mLoadHeaderView.getCurrentHeight();
         if (height <= 0) return;
 
-        if(isRefreshing && height < mHeadViewHeight)return;
+        if (isRefreshing && height < mHeadViewHeight) return;
 
 
         int needHeight = 0;

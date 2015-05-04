@@ -2,6 +2,7 @@ package com.xm.cygcore.view.dataloadview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.xm.cygcore.R;
  *
  */
 public class XmLoadHeaderView extends LinearLayout {
+
+    private static final String TAG = "XmLoadHeaderView";
 
     public final static int STATE_IDEL = 0; //
     public final static int STATE_PULLING = 1; //
@@ -83,9 +86,11 @@ public class XmLoadHeaderView extends LinearLayout {
         LinearLayout.LayoutParams params = (LayoutParams) mContainer.getLayoutParams();
         params.height = height;
         mContainer.setLayoutParams(params);
+
+        Log.w(TAG,"loadheaderview height is:" + height);
     }
 
-    public int getVisibleHeight() {
+    public int getCurrentHeight() {
         return mContainer.getHeight();
     }
 
