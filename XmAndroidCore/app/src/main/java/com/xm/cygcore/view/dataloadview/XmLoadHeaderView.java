@@ -2,6 +2,7 @@ package com.xm.cygcore.view.dataloadview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -20,7 +21,7 @@ public class XmLoadHeaderView extends LinearLayout {
     public final static int STATE_IDEL = 0; //
     public final static int STATE_PULLING = 1; //
     public final static int STATE_REFRESH = 2; //
-    private RelativeLayout mContainer;
+    private LinearLayout mContainer;
     private TextView mTvTipView; // show status tip
 
 
@@ -28,11 +29,11 @@ public class XmLoadHeaderView extends LinearLayout {
     private int mCurrentState = STATE_IDEL;
 
     public XmLoadHeaderView(Context context) {
-        super(context);
+        this(context, null, 0);
     }
 
     public XmLoadHeaderView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public XmLoadHeaderView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -42,8 +43,11 @@ public class XmLoadHeaderView extends LinearLayout {
 
     private void init(Context context) {
         mContext = context;
-        mContainer = (RelativeLayout) LayoutInflater.from(mContext).inflate(R.layout.layer_auto_load_header, null);
+        mContainer = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.layer_auto_load_header, null);
         this.addView(mContainer, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+
+        setGravity(Gravity.BOTTOM);
+
         mTvTipView = (TextView) mContainer.findViewById(R.id.tv_auto_head_loading_status);
 
     }
@@ -75,7 +79,7 @@ public class XmLoadHeaderView extends LinearLayout {
         mContainer.setLayoutParams(params);
     }
 
-    public int getVisibleHeight(){
+    public int getVisibleHeight() {
         return mContainer.getHeight();
     }
 

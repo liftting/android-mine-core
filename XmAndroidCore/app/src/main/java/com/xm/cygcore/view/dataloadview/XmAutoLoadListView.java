@@ -20,11 +20,11 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
     private float mLastY;
 
     public XmAutoLoadListView(Context context) {
-        super(context);
+        this(context, null, 0);
     }
 
     public XmAutoLoadListView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public XmAutoLoadListView(Context context, AttributeSet attrs, int defStyleAttr) {

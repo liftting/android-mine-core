@@ -4,14 +4,29 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+
+import com.xm.cygcore.view.dataloadview.XmAutoLoadListView;
 
 
 public class MainActivity extends Activity {
+
+
+    private XmAutoLoadListView mLoadListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layer_activity_main);
+        mLoadListView = (XmAutoLoadListView) findViewById(R.id.v_data_load_list);
+        String[] s = new String[100];
+        for (int i = 0; i < s.length; i++) {
+            s[i] = "" + i;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
+
+        mLoadListView.setAdapter(adapter);
+
     }
 
 
