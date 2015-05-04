@@ -5,9 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:gravity="bottom">
+    android:gravity="bottom"
+    android:background="@color/chocolate">
 
     <RelativeLayout
+        android:id="@+id/rly_header_content"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="68dp">

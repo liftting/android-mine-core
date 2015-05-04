@@ -22,6 +22,7 @@ public class XmLoadHeaderView extends LinearLayout {
     public final static int STATE_PULLING = 1; //
     public final static int STATE_REFRESH = 2; //
     private LinearLayout mContainer;
+    private RelativeLayout mHeaderContent;
     private TextView mTvTipView; // show status tip
 
 
@@ -44,6 +45,7 @@ public class XmLoadHeaderView extends LinearLayout {
     private void init(Context context) {
         mContext = context;
         mContainer = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.layer_auto_load_header, null);
+        mHeaderContent = (RelativeLayout) mContainer.findViewById(R.id.rly_header_content);
         this.addView(mContainer, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
 
         setGravity(Gravity.BOTTOM);
@@ -68,6 +70,10 @@ public class XmLoadHeaderView extends LinearLayout {
         }
         mCurrentState = currentState;
 
+    }
+
+    public int getContentHeaderHeight() {
+        return mHeaderContent.getHeight();
     }
 
     public void updateHeight(int height) {
