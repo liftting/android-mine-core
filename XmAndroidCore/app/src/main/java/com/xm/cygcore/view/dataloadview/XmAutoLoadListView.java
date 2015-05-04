@@ -83,6 +83,7 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
 
                     // call back
                     if (mDataLoadingListener != null) {
+
                         mDataLoadingListener.onRefresh();
                     }
 
@@ -99,6 +100,8 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
     private void updateHeadViewHeight(int dis) {
         mLoadHeaderView.updateHeight(mLoadHeaderView.getVisibleHeight() + dis);
 
+        if(isRefreshing) return;
+
         if (mLoadHeaderView.getVisibleHeight() >= mHeadViewHeight) {
             // release to refresh
             mLoadHeaderView.updateStateInfo(XmLoadHeaderView.STATE_PULLING);
@@ -112,10 +115,12 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
         int height = mLoadHeaderView.getVisibleHeight();
         if (height <= 0) return;
 
+        if(isRefreshing && height < mHeadViewHeight)return;
+
 
         int needHeight = 0;
 
-        if (!isRefreshing || height <= mHeadViewHeight) {
+        if (!isRefreshing) {
             // not scroll all 没达到下拉释放刷新状态时，
             needHeight = -height;
         } else if (isRefreshing && height > mHeadViewHeight) {
@@ -162,7 +167,7 @@ public class XmAutoLoadListView extends ListView implements AbsListView.OnScroll
 
         void onRefresh();
 
-        void onLoadMore();
+//        void onLoadMore();
     }
 
 }
