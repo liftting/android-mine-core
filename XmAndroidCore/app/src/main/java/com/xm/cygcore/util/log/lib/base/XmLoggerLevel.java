@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.log;
+package com.xm.cygcore.util.log.lib.base;
 
 import android.annotation.SuppressLint;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by wm on 15/6/10.
  */
-public class LogLevel implements Serializable {
+public class XmLoggerLevel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,22 +23,21 @@ public class LogLevel implements Serializable {
 
     public static final String LEVEL_ERROR = "ERROR";
 
-    public static final LogLevel VERBOSE = new LogLevel(LEVEL_VERBOSE, 1);
+    public static final XmLoggerLevel VERBOSE = new XmLoggerLevel(LEVEL_VERBOSE, 1);
 
-    public static final LogLevel DEBUG = new LogLevel(LEVEL_DEBUG, 2);
+    public static final XmLoggerLevel DEBUG = new XmLoggerLevel(LEVEL_DEBUG, 2);
 
-    public static final LogLevel INFO = new LogLevel(LEVEL_INFO, 3);
+    public static final XmLoggerLevel INFO = new XmLoggerLevel(LEVEL_INFO, 3);
 
-    public static final LogLevel WARN = new LogLevel(LEVEL_WARN, 4);
+    public static final XmLoggerLevel WARN = new XmLoggerLevel(LEVEL_WARN, 4);
 
-    public static final LogLevel ERROR = new LogLevel(LEVEL_ERROR, 5);
+    public static final XmLoggerLevel ERROR = new XmLoggerLevel(LEVEL_ERROR, 5);
 
-    private static Map<String, LogLevel> mLevels = new HashMap<String, LogLevel>();
+    private static Map<String, XmLoggerLevel> mLevels = new HashMap<String, XmLoggerLevel>();
 
     private String name;
-
-    /** 用于标识日志的级别，值越小级别越低. */
     private int level;
+
 
     static {
         mLevels.put(LEVEL_VERBOSE, VERBOSE);
@@ -48,21 +47,21 @@ public class LogLevel implements Serializable {
         mLevels.put(LEVEL_ERROR, ERROR);
     }
 
-    public LogLevel(String name, int level) {
+    public XmLoggerLevel(String name, int level) {
         this.name = name;
         this.level = level;
     }
 
     @SuppressLint("DefaultLocale")
-    public static LogLevel getLevel(String key) {
+    public static XmLoggerLevel getLevel(String key) {
         return mLevels.get(key.toUpperCase());
     }
 
-    public static int compare(LogLevel level1, LogLevel level2) {
+    public static int compare(XmLoggerLevel level1, XmLoggerLevel level2) {
         return level1.getLevel() - level2.getLevel();
     }
 
-    public int compare(LogLevel target) {
+    public int compare(XmLoggerLevel target) {
         return this.getLevel() - target.getLevel();
     }
 
@@ -90,14 +89,12 @@ public class LogLevel implements Serializable {
     @Override
     public boolean equals(Object obj) {
 
-        if (!(obj instanceof LogLevel)) {
+        if (!(obj instanceof XmLoggerLevel)) {
             return false;
         }
 
-        return ((LogLevel) obj).name.equals(name)
-                && ((LogLevel) obj).level == level;
+        return ((XmLoggerLevel) obj).name.equals(name)
+                && ((XmLoggerLevel) obj).level == level;
     }
-
-
 
 }
