@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by wm on 15/6/11.
  */
-public class Thread {
+public class ThreadTest {
 
 
 
@@ -17,11 +17,11 @@ public class Thread {
     }
 
     // 延迟初始化操作，
-    public static Thread instance;
+    public static ThreadTest instance;
 
-    public static Thread getInstance(){
+    public static ThreadTest getInstance(){
         if(instance == null){
-            instance = new Thread(); // 如果这里的构造费时操作，那么当多个thread同时get判断时，就会出现判断错误
+            instance = new ThreadTest(); // 如果这里的构造费时操作，那么当多个thread同时get判断时，就会出现判断错误
         }
         return instance;
     }

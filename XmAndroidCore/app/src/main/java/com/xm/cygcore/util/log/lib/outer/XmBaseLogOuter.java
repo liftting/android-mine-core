@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.log.lib.appender;
+package com.xm.cygcore.util.log.lib.outer;
 
 import com.xm.cygcore.util.log.lib.base.XmLoggerBean;
 import com.xm.cygcore.util.log.lib.filter.XmILogFilter;

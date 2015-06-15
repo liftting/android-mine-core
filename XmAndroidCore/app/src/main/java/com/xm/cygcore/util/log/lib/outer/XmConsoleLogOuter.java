@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.log.lib.appender;
+package com.xm.cygcore.util.log.lib.outer;
 
 import android.text.TextUtils;
 import android.util.Log;

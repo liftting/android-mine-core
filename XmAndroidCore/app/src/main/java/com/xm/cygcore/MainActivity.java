@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
+import com.xm.cygcore.util.shortcut.XmShortCutUtil;
 import com.xm.cygcore.view.dataloadview.XmAutoLoadListView;
 
 
@@ -26,6 +27,8 @@ public class MainActivity extends Activity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
 
         mLoadListView.setAdapter(adapter);
+
+        XmShortCutUtil.getInstance(this).createShortCut();
 
     }
 

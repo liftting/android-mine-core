@@ -1,7 +1,7 @@
 package com.xm.cygcore.util.log.lib.base;
 
-import com.xm.cygcore.util.log.lib.appender.XmBaseLogOuter;
-import com.xm.cygcore.util.log.lib.appender.XmLogOuterManager;
+import com.xm.cygcore.util.log.lib.outer.XmBaseLogOuter;
+import com.xm.cygcore.util.log.lib.outer.XmLogOuterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,8 @@ public class XmLogger {
 
     private String tag;
 
-    public static XmLogger getLogger(String tagName) {
-        XmLogger logger = new XmLogger();
-        logger.tag = tagName;
-        return logger;
+    public XmLogger(String tagName) {
+        tag = tagName;
     }
 
     public void i(Object msg) {

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.xm.cygcore.view.progressbar.CircleProgressDrawable
-        android:layout_width="24dp"
-        android:layout_height="24dp" />
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
 
 </LinearLayout>

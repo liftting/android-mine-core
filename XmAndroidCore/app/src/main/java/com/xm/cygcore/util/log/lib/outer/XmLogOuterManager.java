@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.log.lib.appender;
+package com.xm.cygcore.util.log.lib.outer;
 
 import java.util.ArrayList;
 import java.util.List;
