@@ -1,4 +1,4 @@
-package com.xm.cygcore.test;
+package com.xm.cygcore.androidTest;
 
 /**
  * Created by wm on 15/6/15.

@@ -2,16 +2,13 @@ package com.xm.cygcore.view.progressbar;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.xm.cygcore.util.log.lib.XmLoggerFactory;
+import com.xm.cygcore.util.log.lib.server.XmLoggerFactory;
 import com.xm.cygcore.util.log.lib.base.XmLogger;
 
 /**

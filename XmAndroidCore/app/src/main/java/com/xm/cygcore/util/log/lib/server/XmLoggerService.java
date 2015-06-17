@@ -1,5 +1,7 @@
 package com.xm.cygcore.util.log.lib.server;
 
+import com.xm.cygcore.R;
+import com.xm.cygcore.util.log.lib.base.XmLoggerBean;
 import com.xm.cygcore.util.log.lib.outer.XmBaseLogOuter;
 
 import java.util.concurrent.BlockingQueue;
@@ -12,14 +14,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class XmLoggerService {
 
-    private ExecutorService service = Executors.newSingleThreadExecutor();
-    private long timeout;
+    private ExecutorService service = Executors.newSingleThreadExecutor();// 默认使用了BlockingQueue
+    private long timeout = 2; //延迟2s
     private TimeUnit timeUnit = TimeUnit.SECONDS;
 
-    private BlockingQueue<XmBaseLogOuter> mOuterQueue;//放置进行输出操作的队列
+    private static XmLoggerService instance = new XmLoggerService();
 
-    public void start() {
+    private XmLoggerService() {
 
+    }
+
+    public static XmLoggerService getInstance() {
+        return instance;
+    }
+
+    private void go(Runnable runnable) {
+        service.submit(runnable);
     }
 
     public void stop() {
@@ -31,6 +41,23 @@ public class XmLoggerService {
         } finally {
 
         }
+    }
+
+    /**
+     * 将任务放置到线程池中
+     *
+     * @param outer
+     * @param bean
+     */
+    public void syncLog(final XmBaseLogOuter outer, final XmLoggerBean bean) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                outer.outLog(bean);
+            }
+        };
+
+        go(runnable);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.log.lib;
+package com.xm.cygcore.util.log.lib.server;
 
 import com.xm.cygcore.util.log.lib.base.XmLogger;
 
