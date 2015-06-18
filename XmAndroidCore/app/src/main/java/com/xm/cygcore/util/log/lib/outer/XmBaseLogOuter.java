@@ -30,6 +30,8 @@ public abstract class XmBaseLogOuter {
         // this is not show this log
         if (mLogFilter != null && mLogFilter.isFilter(bean)) return;
 
+        if (bean == null) return;
+
         String message = bean.logMessage;
         if (mLogPreview != null) {
             message = mLogPreview.format(bean);

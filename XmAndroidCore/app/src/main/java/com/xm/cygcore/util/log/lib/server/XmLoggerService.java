@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by wm on 15/6/17.
  */
-public class XmLoggerService {
+public class XmLoggerService implements LogService {
 
     private ExecutorService service;// 默认使用了BlockingQueue
     private long timeout = 2; //延迟2s
@@ -51,6 +51,7 @@ public class XmLoggerService {
      * @param outer
      * @param bean
      */
+    @Override
     public void syncLog(final XmBaseLogOuter outer, final XmLoggerBean bean) {
 
         if (service == null) {

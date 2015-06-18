@@ -2,7 +2,9 @@ package com.xm.cygcore.util.log.lib.base;
 
 import com.xm.cygcore.util.log.lib.outer.XmBaseLogOuter;
 import com.xm.cygcore.util.log.lib.outer.XmLogOuterManager;
+import com.xm.cygcore.util.log.lib.server.LogService;
 import com.xm.cygcore.util.log.lib.server.XmLoggerService;
+import com.xm.cygcore.util.log.lib.server.XmLoggerThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,12 +146,22 @@ public class XmLogger {
             logOuterList.add(XmLogOuterManager.getInstance().getDefaultOuter());
         }
 
-        XmLoggerService loggerService = XmLoggerService.getInstance();
+        LogService loggerService = getLogService();
 
         for (XmBaseLogOuter outer : logOuterList) {
             loggerService.syncLog(outer, bean);
         }
 
+    }
+
+    /**
+     * 配置log service
+     *
+     * @return
+     */
+    private LogService getLogService() {
+        LogService service = XmLoggerThread.getInstance();
+        return service;
     }
 
 
