@@ -5,8 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.xm.cygcore.view.progressbar.CircleProgressDrawable
-        android:layout_width="48dp"
-        android:layout_height="48dp" />
+    <!--<com.xm.cygcore.view.progressbar.CircleProgressDrawable-->
+    <!--android:layout_width="48dp"-->
+    <!--android:layout_height="48dp" />-->
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转二维码"
+        android:textSize="14sp"
+        android:onClick="onConvertQrcode" />
 
 </LinearLayout>

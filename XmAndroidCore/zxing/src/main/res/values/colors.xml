@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 二维码扫描 -->
+    <color name="zx_capture_scan_laser">#72bb2f</color>
+    <color name="zx_capture_scan_text">#D3D3D3</color>
+    <color name="zx_capture_scanresult_mask">#b0000000</color>
+    <color name="zx_viewfinder_mask">#60000000</color>
+    <color name="zx_white">#ffffff</color>
+    <color name="zx_black">#000000</color>
+
+    <color name="zx_actionbar_pressed">#cd2b33</color>
+    <color name="zx_foreground_color_red">#f02832</color>
+
+</resources>

@@ -1,12 +1,15 @@
 package com.xm.cygcore.androidTest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.xm.cygcore.R;
+import com.xm.zxing.activity.CaptureActivity;
 
 /**
- * Created by wm on 15/6/10.
+ *
  */
 public class TestActivity extends Activity {
 
@@ -19,5 +22,11 @@ public class TestActivity extends Activity {
 //        Executors.newFixedThreadPool(12);
 //        Executors.newSingleThreadExecutor();
 
+    }
+
+    public void onConvertQrcode(View v) {
+        Intent intent = new Intent();
+        intent.setClass(this, CaptureActivity.class);
+        startActivity(intent);
     }
 }

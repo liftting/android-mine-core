@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <SurfaceView
+        android:id="@+id/preview_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
+    <com.xm.zxing.view.ViewfinderView
+        android:id="@+id/viewfinder_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent" />
+
+    <LinearLayout
+        android:id="@+id/progressbg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/zx_alert_process_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:padding="24dp">
+
+        <ProgressBar
+            android:id="@+id/loadingimg"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:indeterminateDrawable="@drawable/zx_progressbar_rotate"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateOnly="true" />
+
+        <TextView
+            android:id="@+id/messagetv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="验证中，请稍后..."
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <!-- 标题栏的高度 -->
+
+    <LinearLayout
+        android:id="@+id/ly_bar_container"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/zx_black"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/actionbar_btn_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:onClick="onBack">
+
+            <ImageView
+                android:id="@+id/action_bar_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/zx_back_normal" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/actionbar_title"
+            android:layout_centerInParent="true"
+            style="@style/zx_ActionbarTitle"
+            android:text="验证二维码"
+            android:textColor="@color/zx_white" />
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            style="@style/zx_ActionbarMenuItem"
+            android:background="@color/zx_black" />
+
+    </LinearLayout>
+
+
+</FrameLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">XmZxing</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- capture -->
+    <string name="zx_capture_result_bcont">二维码内容</string>
+    <string name="zx_capture_result_no_data">没有找到相关商品哦，\n换个试试吧</string>
+    <string name="zx_capture_scan_text_header">请将二维码置于下方的取景框中</string>
+    <string name="zx_capture_scan_text_hint">请将二维码、条形码置于扫描区域内</string>
+
+    <string name="zx_product_scan_qrcode_tip">该商品购买成功后会生成二维码，在“我的>二维码收货”页面可快速收货</string>
+    <string name="zx_product_scan_fail">该二维码扫描无效，请重试</string>
+
+</resources>

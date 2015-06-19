@@ -1,4 +1,4 @@
-package com.xm.cygcore.view.dataloadview;
+package com.xm.cygcore.view.dataloadview.pulltoload;
 
 import android.content.Context;
 import android.util.AttributeSet;
