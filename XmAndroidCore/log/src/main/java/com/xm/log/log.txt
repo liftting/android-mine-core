@@ -1,0 +1,7 @@
+this is log lib
+整体以接口，
+组合的设计方式
+
+filter: 过滤判断是否输出
+preview:处理数据显示的格式
+outer:输出控制逻辑，log输出的位置，
