@@ -19,16 +19,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.xm.log.base.XmLogger;
 import com.xm.webview.R;
 import com.xm.webview.controller.TitleHandler;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
 import com.xm.webview.util.ConstantsUtil;
 
+
 /**
  *
  */
 public class XmWebView extends WebView implements TitleHandler {
+
+    private static final XmLogger logger = new XmLogger("XmWebView");
 
     private Context mContext;
     private WebTitleView mTitleView;
@@ -153,6 +157,7 @@ public class XmWebView extends WebView implements TitleHandler {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            logger.d("webLoading:onPageFinished");
             super.onPageFinished(view, url);
 
             if (TextUtils.isEmpty(view.getTitle())) {
@@ -165,6 +170,7 @@ public class XmWebView extends WebView implements TitleHandler {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            logger.d("webLoading:onPageStarted");
             super.onPageStarted(view, url, favicon);
             if (TextUtils.isEmpty(view.getTitle())) {
                 mTitleView.setTitle(mContext.getResources().getString(R.string.default_web_title));
@@ -177,7 +183,7 @@ public class XmWebView extends WebView implements TitleHandler {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
+            logger.d("webLoading:shouldOverrideUrlLoading");
             if (url.startsWith(ConstantsUtil.URL_SCHEME_MAIL_TO)) {
 
                 //邮件
@@ -209,23 +215,27 @@ public class XmWebView extends WebView implements TitleHandler {
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             //资源请求处理，可以我们先本地请求，
+            logger.d("webLoading:shouldInterceptRequest");
             return super.shouldInterceptRequest(view, url);
         }
 
         @Override
         public void onFormResubmission(WebView view, Message dontResend, Message resend) {
             // 表单重新发送
+            logger.d("webLoading:onFormResubmission");
             super.onFormResubmission(view, dontResend, resend);
         }
 
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             // 证书错误，ssl
+            logger.d("webLoading:onReceivedSslError");
             super.onReceivedSslError(view, handler, error);
         }
 
         @Override
         public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+            logger.d("webLoading:onReceivedHttpAuthRequest");
             super.onReceivedHttpAuthRequest(view, handler, host, realm);
         }
     }
