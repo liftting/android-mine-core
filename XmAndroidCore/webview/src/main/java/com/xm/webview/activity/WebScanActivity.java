@@ -39,6 +39,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     private String mDefaultTitle;
 
+    private static final ViewGroup.LayoutParams MATCH_PARENT = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,10 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
 
         mCurrentView = new XmWebView(this, this);
-        mWebContainer.addView(mCurrentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mWebViewList.add(mCurrentView);
+
+
+        mWebContainer.addView(mCurrentView, MATCH_PARENT);
     }
 
 
@@ -216,10 +222,28 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     }
 
     public void onToolMultiWindows(View v) {
-
+        addWebView();
     }
 
     public void onToolMenu(View v) {
 
     }
+
+    private void addWebView() {
+
+        XmWebView newTab = new XmWebView(this, this); // 设置控制回调
+        mWebViewList.add(newTab);
+        showChoiceWebView(newTab);
+
+    }
+
+    private void showChoiceWebView(XmWebView webView) {
+
+        mWebContainer.removeAllViews();
+        mCurrentView = webView;
+        mWebContainer.addView(mCurrentView, MATCH_PARENT);
+
+    }
+
+
 }
