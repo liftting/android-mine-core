@@ -4,7 +4,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.xm.webview.util.ConstantsUtil;
+import com.xm.webview.util.XmWebUtils;
 import com.xm.webview.view.XmWebView;
 
 /**
@@ -16,8 +16,8 @@ public class XmScanListener implements View.OnTouchListener {
     private WebScanHandler mScanHandler;
     private GestureDetector mGestureDetector;
 
-    private static final int SCROLL_UP_THRESHOLD = ConstantsUtil.convertDpToPixels(10);
-    private static final int SCROLL_DOWN_THRESHOLD = ConstantsUtil.convertDpToPixels(100);
+    private static final int SCROLL_UP_THRESHOLD = XmWebUtils.convertDpToPixels(10);
+    private static final int SCROLL_DOWN_THRESHOLD = XmWebUtils.convertDpToPixels(100);
 
     float mLocation;
     float mY;
@@ -43,6 +43,7 @@ public class XmScanListener implements View.OnTouchListener {
                 if (mWebView.getScrollY() != 0) {
                     mScanHandler.showTitleBar();
                 } else {
+                    //滑动到顶部时，
                     mScanHandler.toggleTitleBar();
                 }
             } else if ((mY - mLocation) < -SCROLL_UP_THRESHOLD) {

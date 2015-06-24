@@ -1,13 +1,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fly_webview_container">
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fly_webview_container">
+
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="vertical"
+            android:id="@+id/ly_webview_container_title"
+            android:gravity="center_vertical"
+            android:background="@color/black"
+            android:padding="2dp">
+
+            <com.xm.webview.view.WebTitleView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_view_container" />
+
+            <com.xm.webview.view.AnimatedProgressBar
+                android:id="@+id/progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                custom:backgroundColor="#00000000"
+                custom:bidirectionalAnimate="false"
+                custom:progressColor="@color/content_red_light" />
+
+        </LinearLayout>
 
     </FrameLayout>
 

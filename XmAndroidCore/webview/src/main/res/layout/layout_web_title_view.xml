@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="visible"
+    android:background="@drawable/web_search_title"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
 
     <ImageView
         android:id="@+id/img_web_address_collect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/address_bookmark_star"
-        android:layout_gravity="center_vertical" />
+        android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/tv_web_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/img_web_address_collect"
         android:textSize="14sp"
-        android:textColor="@color/black" />
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/black"
+        android:gravity="center_vertical"
+        android:singleLine="true" />
 
-</LinearLayout>
+</RelativeLayout>

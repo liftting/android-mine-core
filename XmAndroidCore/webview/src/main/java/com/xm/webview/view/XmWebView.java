@@ -1,13 +1,10 @@
 package com.xm.webview.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.MailTo;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,27 +18,25 @@ import android.webkit.WebViewClient;
 
 import com.xm.log.base.XmLogger;
 import com.xm.webview.R;
-import com.xm.webview.controller.TitleHandler;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
-import com.xm.webview.util.ConstantsUtil;
 
 
 /**
  *
  */
-public class XmWebView extends WebView implements TitleHandler {
+public class XmWebView extends WebView {
 
     private static final XmLogger logger = new XmLogger("XmWebView");
 
     private Context mContext;
-    private WebTitleView mTitleView;
-
     private XmWebViewClient mWebViewClient;
     private XmWebViewChromeClient mWebChromeClient;
     private WebScanHandler mScanHandler;
     private XmScanListener mScanListener;
     private WebSettings mWebSettings;
+
+    private Title mTitle;
 
 
     private GestureDetector gestureDetector;
@@ -55,8 +50,9 @@ public class XmWebView extends WebView implements TitleHandler {
         mWebViewClient = new XmWebViewClient(this);
         mWebChromeClient = new XmWebViewChromeClient(this);
 
-        mTitleView = new WebTitleView(mContext, this);
+//        mTitleView = new WebTitleView(mContext, this);
         mScanHandler = scanHandler;
+        mTitle = new Title(mContext);
 
         gestureDetector = new GestureDetector(new CustomGestureListener());
         mScanListener = new XmScanListener(this, mScanHandler, gestureDetector);
@@ -94,17 +90,17 @@ public class XmWebView extends WebView implements TitleHandler {
         initializeSettings(getSettings(), mContext);
 //        initializePreferences(activity);
 
-//        String defaultUrl = "http://www.baidu.com";
-//
-//        if (defaultUrl != null) {
-//            if (!defaultUrl.trim().isEmpty()) {
-//                loadUrl(defaultUrl);
-//            } else {
-//                // don't load anything, the user is looking for a blank tab
-//            }
-//        } else {
-//
-//        }
+        String defaultUrl = "http://www.baidu.com";
+
+        if (defaultUrl != null) {
+            if (!defaultUrl.trim().isEmpty()) {
+                loadUrl(defaultUrl);
+            } else {
+                // don't load anything, the user is looking for a blank tab
+            }
+        } else {
+
+        }
     }
 
     public void initializeSettings(WebSettings settings, Context context) {
@@ -145,6 +141,31 @@ public class XmWebView extends WebView implements TitleHandler {
         }
     }
 
+    // 处理title一些信息
+    public class Title {
+
+        private String mTitle;
+
+        public Title(Context context) {
+            mTitle = mContext.getString(R.string.default_web_title);
+        }
+
+
+        public void setTitle(String title) {
+            if (title == null) {
+                mTitle = "";
+            } else {
+                mTitle = title;
+            }
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+
+    }
+
     // webViewClient
     private class XmWebViewClient extends WebViewClient {
 
@@ -160,11 +181,20 @@ public class XmWebView extends WebView implements TitleHandler {
             logger.d("webLoading:onPageFinished");
             super.onPageFinished(view, url);
 
-            if (TextUtils.isEmpty(view.getTitle())) {
-                mTitleView.setTitle(mContext.getResources().getString(R.string.default_web_title));
-            } else {
-                mTitleView.setTitle(view.getTitle());
+            if (view.isShown()) {
+                mScanHandler.updateUrl(url, true);
+                view.postInvalidate();
             }
+            if (view.getTitle() == null || view.getTitle().isEmpty()) {
+                mTitle.setTitle(mContext.getString(R.string.default_web_title));
+            } else {
+                mTitle.setTitle(view.getTitle());
+            }
+//            if (API >= android.os.Build.VERSION_CODES.KITKAT && mInvertPage) {
+//                view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
+//            }
+
+//            mBrowserController.update();
 
         }
 
@@ -172,42 +202,16 @@ public class XmWebView extends WebView implements TitleHandler {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             logger.d("webLoading:onPageStarted");
             super.onPageStarted(view, url, favicon);
-            if (TextUtils.isEmpty(view.getTitle())) {
-                mTitleView.setTitle(mContext.getResources().getString(R.string.default_web_title));
-            } else {
-                mTitleView.setTitle(view.getTitle());
+            if (view.isShown()) {
+                mScanHandler.updateUrl(url, false); // 处理显示的title
+                mScanHandler.showTitleBar();
             }
-
 
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             logger.d("webLoading:shouldOverrideUrlLoading");
-            if (url.startsWith(ConstantsUtil.URL_SCHEME_MAIL_TO)) {
-
-                //邮件
-                MailTo mailTo = MailTo.parse(url);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mailTo.getTo()});
-                intent.putExtra(Intent.EXTRA_TEXT, mailTo.getBody());
-                intent.putExtra(Intent.EXTRA_SUBJECT, mailTo.getSubject());
-                intent.putExtra(Intent.EXTRA_CC, mailTo.getCc());
-                intent.setType(INTENT_TYPE_MESSAGE_RFC822);
-
-                mContext.startActivity(intent);
-                view.reload();
-                return true;
-            } else if (url.startsWith(ConstantsUtil.URL_SCHEME_INTENT)) {
-                Intent intent;
-                try {
-                    intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-                    mContext.startActivity(intent);
-                    return true;
-                } catch (Exception e) {
-                } // When intent fail will crash
-            }
-
             return super.shouldOverrideUrlLoading(view, url);
 
         }
@@ -236,7 +240,7 @@ public class XmWebView extends WebView implements TitleHandler {
         @Override
         public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
             logger.d("webLoading:onReceivedHttpAuthRequest");
-            super.onReceivedHttpAuthRequest(view, handler, host, realm);
+
         }
     }
 
@@ -251,9 +255,8 @@ public class XmWebView extends WebView implements TitleHandler {
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
             //请求创建一个新窗口
-            mScanHandler.onCreateWindow(webView, resultMsg);
-//            return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
-            return isUserGesture; // true 创建一个新的webView
+            mScanHandler.onCreateWindow(view, resultMsg);
+            return true;
         }
 
         @Override
@@ -262,9 +265,21 @@ public class XmWebView extends WebView implements TitleHandler {
         }
 
         @Override
+        public void onReceivedIcon(WebView view, Bitmap icon) {
+            super.onReceivedIcon(view, icon);
+        }
+
+        @Override
         public void onReceivedTitle(WebView view, String title) {
-            super.onReceivedTitle(view, title);
-            mTitleView.setTitle(title);
+
+            if (!title.isEmpty()) {
+                mTitle.setTitle(title);
+            } else {
+                mTitle.setTitle(mContext.getString(R.string.default_web_title));
+            }
+//            mScanHandler.update();
+            mScanHandler.updateHistory(title, view.getUrl());
+
         }
 
 
@@ -287,12 +302,12 @@ public class XmWebView extends WebView implements TitleHandler {
             super.onHideCustomView();
         }
 
-
-    }
-
-    @Override
-    public void onWebAddressCollect(boolean isCollect) {
-
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (isShown()) {
+                mScanHandler.updateProgress(newProgress);
+            }
+        }
     }
 
     private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -332,5 +347,8 @@ public class XmWebView extends WebView implements TitleHandler {
         }
     }
 
+    public String getTitle() {
+        return mTitle.getTitle();
+    }
 
 }

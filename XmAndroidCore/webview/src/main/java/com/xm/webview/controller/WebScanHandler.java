@@ -27,4 +27,10 @@ public interface WebScanHandler {
     public void hideTitleBar();
 
     public void onLongPress();
+
+    public void updateUrl(String title, boolean shortUrl);
+
+    public void updateProgress(int n);
+
+    public void updateHistory(String title, String url);
 }
