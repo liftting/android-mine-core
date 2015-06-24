@@ -21,6 +21,9 @@ import com.xm.webview.view.AnimatedProgressBar;
 import com.xm.webview.view.WebTitleView;
 import com.xm.webview.view.XmWebView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class WebScanActivity extends Activity implements WebScanHandler, TitleHandler {
 
@@ -31,6 +34,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private LinearLayout mHeadContainer;
     private AnimatedProgressBar mProgressBar;
 
+    private final List<XmWebView> mWebViewList = new ArrayList<XmWebView>();
+
+
     private String mDefaultTitle;
 
 
@@ -39,16 +45,24 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        init();
+
+    }
+
+    private void init() {
+        mWebViewList.clear();
+
+
         mDefaultTitle = getString(R.string.default_web_title);
         mTitleView = (WebTitleView) findViewById(R.id.title_view_container);
         mProgressBar = (AnimatedProgressBar) findViewById(R.id.progress_view);
         mWebContainer = (FrameLayout) findViewById(R.id.fly_webview_container);
-
         mHeadContainer = (LinearLayout) findViewById(R.id.ly_webview_container_title);
+
 
         mCurrentView = new XmWebView(this, this);
         mWebContainer.addView(mCurrentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
     }
 
 
@@ -169,6 +183,43 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     @Override
     public void onWebAddressCollect(boolean isCollect) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mCurrentView != null) {
+            if (mCurrentView.canGoBack()) {
+                mCurrentView.back();
+            } else {
+                super.onBackPressed();
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public void onToolGoBack(View v) {
+        if (mCurrentView.canGoBack()) {
+            mCurrentView.back();
+        }
+    }
+
+    public void onToolGoForward(View v) {
+        if (mCurrentView.canGoForward()) {
+            mCurrentView.goForward();
+        }
+    }
+
+    public void onToolGoHome(View v) {
+
+    }
+
+    public void onToolMultiWindows(View v) {
+
+    }
+
+    public void onToolMenu(View v) {
 
     }
 }

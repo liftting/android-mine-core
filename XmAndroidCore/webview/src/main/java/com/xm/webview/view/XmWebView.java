@@ -21,6 +21,9 @@ import com.xm.webview.R;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  *
@@ -37,7 +40,7 @@ public class XmWebView extends WebView {
     private WebSettings mWebSettings;
 
     private Title mTitle;
-
+    private Map<String, String> mTitleMap = new HashMap<String, String>();
 
     private GestureDetector gestureDetector;
 
@@ -129,6 +132,7 @@ public class XmWebView extends WebView {
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(true);
         settings.setDefaultTextEncodingName("utf-8");
+        settings.setJavaScriptEnabled(true);
         if (API > 16) {
             settings.setAllowFileAccessFromFileURLs(false);
             settings.setAllowUniversalAccessFromFileURLs(false);
@@ -181,15 +185,20 @@ public class XmWebView extends WebView {
             logger.d("webLoading:onPageFinished");
             super.onPageFinished(view, url);
 
-            if (view.isShown()) {
-                mScanHandler.updateUrl(url, true);
-                view.postInvalidate();
-            }
             if (view.getTitle() == null || view.getTitle().isEmpty()) {
                 mTitle.setTitle(mContext.getString(R.string.default_web_title));
             } else {
                 mTitle.setTitle(view.getTitle());
             }
+
+            if (view.isShown()) {
+                mScanHandler.updateUrl(url, true);
+                view.postInvalidate();
+            }
+
+            logger.d("webLoading:onPageFinished is " + view.getTitle());
+
+
 //            if (API >= android.os.Build.VERSION_CODES.KITKAT && mInvertPage) {
 //                view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
 //            }
@@ -277,7 +286,9 @@ public class XmWebView extends WebView {
             } else {
                 mTitle.setTitle(mContext.getString(R.string.default_web_title));
             }
+            mScanHandler.updateUrl(title, true);
 //            mScanHandler.update();
+            logger.d("webLoading:onReceivedTitle is " + mTitle.getTitle());
             mScanHandler.updateHistory(title, view.getUrl());
 
         }
@@ -347,8 +358,22 @@ public class XmWebView extends WebView {
         }
     }
 
-    public String getTitle() {
-        return mTitle.getTitle();
+    public synchronized void onDestroy() {
+        stopLoading();
+        onPause();
+        clearHistory();
+        setVisibility(View.GONE);
+        removeAllViews();
+        destroyDrawingCache();
+        // destroy(); //this is causing the segfault
+    }
+
+    public synchronized void back() {
+        goBack();
+    }
+
+    public synchronized void forward() {
+        goForward();
     }
 
 }
