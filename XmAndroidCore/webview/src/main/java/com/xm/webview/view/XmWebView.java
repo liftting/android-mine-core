@@ -1,16 +1,22 @@
 package com.xm.webview.view;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.MailTo;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -20,8 +26,13 @@ import com.xm.log.base.XmLogger;
 import com.xm.webview.R;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
+import com.xm.webview.util.Constants;
+import com.xm.webview.util.IntentUtils;
+import com.xm.webview.util.XmAdverIntercept;
 import com.xm.webview.util.XmWebUtils;
 
+import java.io.ByteArrayInputStream;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +44,7 @@ public class XmWebView extends WebView {
 
     private static final XmLogger logger = new XmLogger("XmWebView");
 
-    private Context mContext;
+    private Activity mContext;
     private XmWebViewClient mWebViewClient;
     private XmWebViewChromeClient mWebChromeClient;
     private WebScanHandler mScanHandler;
@@ -44,10 +55,12 @@ public class XmWebView extends WebView {
     private Map<String, String> mTitleMap = new HashMap<String, String>();
 
     private GestureDetector gestureDetector;
+    private IntentUtils mIntentUtils;
+    private XmAdverIntercept mAdverIntercept;
 
     private static final int API = android.os.Build.VERSION.SDK_INT;
 
-    public XmWebView(Context context, WebScanHandler scanHandler) {
+    public XmWebView(Activity context, WebScanHandler scanHandler) {
         super(context);
         this.mContext = context;
 
@@ -60,6 +73,8 @@ public class XmWebView extends WebView {
 
         gestureDetector = new GestureDetector(new CustomGestureListener());
         mScanListener = new XmScanListener(this, mScanHandler, gestureDetector);
+        mIntentUtils = new IntentUtils(mContext);
+        mAdverIntercept = XmAdverIntercept.getInstance(mContext);
 
         initWebSettings();
 
@@ -224,14 +239,71 @@ public class XmWebView extends WebView {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             logger.d("webLoading:shouldOverrideUrlLoading");
-            return super.shouldOverrideUrlLoading(view, url);
 
+            // Check if configured proxy is available
+//            if (!mBrowserController.isProxyReady()) {
+//                // User has been notified
+//                return true;
+//            }
+
+//            if (mBrowserController.isIncognito()) {
+//                return super.shouldOverrideUrlLoading(view, url);
+//            }
+            if (url.startsWith("about:")) {
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+            if (url.contains("mailto:")) {
+                MailTo mailTo = MailTo.parse(url);
+                Intent i = XmWebUtils.newEmailIntent(mailTo.getTo(), mailTo.getSubject(),
+                        mailTo.getBody(), mailTo.getCc());
+                mContext.startActivity(i);
+                view.reload();
+                return true;
+            } else if (url.startsWith("intent://")) {
+                Intent intent;
+                try {
+                    intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                } catch (URISyntaxException ex) {
+                    return false;
+                }
+                if (intent != null) {
+                    try {
+                        mContext.startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        logger.e("ActivityNotFoundException");
+                    }
+                    return true;
+                }
+            }
+            return mIntentUtils.startActivityForUrl(XmWebView.this, url);
+
+        }
+
+        @Override
+        public void onScaleChanged(WebView view, float oldScale, float newScale) {
+            super.onScaleChanged(view, oldScale, newScale);
+
+        }
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            if (mAdverIntercept.isAd(request.getUrl().getHost())) {
+                //是广告
+                ByteArrayInputStream EMPTY = new ByteArrayInputStream("广告".getBytes());
+                return new WebResourceResponse("text/plain", "utf-8", EMPTY);
+            }
+            return super.shouldInterceptRequest(view, request);
         }
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             //资源请求处理，可以我们先本地请求，
             logger.d("webLoading:shouldInterceptRequest");
+            if (mAdverIntercept.isAd(url)) {
+                //是广告
+                ByteArrayInputStream EMPTY = new ByteArrayInputStream("广告".getBytes());
+                return new WebResourceResponse("text/plain", "utf-8", EMPTY);
+            }
             return super.shouldInterceptRequest(view, url);
         }
 
@@ -382,7 +454,7 @@ public class XmWebView extends WebView {
     /**
      * 截取webView可视区域的截图
      *
-     * @param webView 前提：WebView要设置webView.setDrawingCacheEnabled(true);
+     * 前提：WebView要设置webView.setDrawingCacheEnabled(true);
      * @return
      */
     public Bitmap captureWebViewVisibleSize() {
