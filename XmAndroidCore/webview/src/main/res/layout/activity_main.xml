@@ -130,4 +130,7 @@
 
     </LinearLayout>
 
+    <include
+        layout="@layout/layout_web_multi_window" />
+
 </RelativeLayout>

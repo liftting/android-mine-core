@@ -3,8 +3,10 @@ package com.xm.webview.util;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.webkit.WebView;
 
 import java.net.URISyntaxException;
@@ -21,6 +23,13 @@ public class XmWebUtils {
         return (int) (dp * metrics.density + 0.5f);
     }
 
+    public static Bitmap convertViewToBitmap(View view) {
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.buildDrawingCache();
+        Bitmap bitmap = view.getDrawingCache();
+        return bitmap;
+    }
 
 
 }

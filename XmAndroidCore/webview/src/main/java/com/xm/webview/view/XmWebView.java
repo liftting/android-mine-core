@@ -20,6 +20,7 @@ import com.xm.log.base.XmLogger;
 import com.xm.webview.R;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
+import com.xm.webview.util.XmWebUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,10 +66,12 @@ public class XmWebView extends WebView {
     }
 
     private synchronized void initWebSettings() {
-        setDrawingCacheBackgroundColor(0x00000000);
         setFocusableInTouchMode(true);
         setFocusable(true);
         setAnimationCacheEnabled(false);
+
+        //这里要做屏幕截图，所以这里的cache要打开，
+        setDrawingCacheBackgroundColor(0x00000000);
         setDrawingCacheEnabled(false);
         setWillNotCacheDrawing(true);
         setAlwaysDrawnWithCacheEnabled(false);
@@ -374,6 +377,18 @@ public class XmWebView extends WebView {
 
     public synchronized void forward() {
         goForward();
+    }
+
+    /**
+     * 截取webView可视区域的截图
+     *
+     * @param webView 前提：WebView要设置webView.setDrawingCacheEnabled(true);
+     * @return
+     */
+    public Bitmap captureWebViewVisibleSize() {
+//        Bitmap bmp = getDrawingCache();
+        Bitmap bmp = XmWebUtils.convertViewToBitmap(this);
+        return bmp;
     }
 
 }
