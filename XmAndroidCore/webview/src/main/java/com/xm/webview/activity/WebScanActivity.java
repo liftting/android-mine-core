@@ -49,6 +49,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private View mWebMultiContainer;
     private XmWebViewListAdapter mMultiAdapter;
 
+    //menu 的容器
+    private LinearLayout mMenuContainer;
+
 
     private static final ViewGroup.LayoutParams MATCH_PARENT = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -90,6 +93,10 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
         mWebContainer.setDrawingCacheEnabled(true);
 
         configMultiList();
+
+
+        // menu
+        mMenuContainer = (LinearLayout) findViewById(R.id.rly_web_menu_container);
     }
 
     private WebViewBean getWrapWebView() {
@@ -260,7 +267,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     }
 
     public void onToolMenu(View v) {
-
+        mMenuContainer.setVisibility(View.VISIBLE);
     }
 
     private void addWebView() {
@@ -346,6 +353,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
         /**
          * 进行大小压缩，
+         *
          * @param image
          * @return
          */

@@ -49,7 +49,7 @@
     <LinearLayout
         android:id="@+id/ly_webview_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/web_tool_bar_height"
         android:background="@color/black"
         android:layout_alignParentBottom="true"
         android:weightSum="5"
@@ -130,7 +130,18 @@
 
     </LinearLayout>
 
-    <include
-        layout="@layout/layout_web_multi_window" />
+    <include layout="@layout/layout_web_multi_window" />
+
+    <LinearLayout
+        android:id="@+id/rly_web_menu_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/light_gray"
+        android:gravity="bottom"
+        android:visibility="gone">
+
+        <include layout="@layout/layout_web_menu" />
+    </LinearLayout>
+
 
 </RelativeLayout>
