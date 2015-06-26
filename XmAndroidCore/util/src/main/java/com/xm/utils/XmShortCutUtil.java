@@ -1,4 +1,4 @@
-package com.xm.cygcore.util.shortcut;
+package com.xm.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +10,8 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.preference.Preference;
 import android.text.TextUtils;
-import android.widget.Toast;
 
-import com.xm.cygcore.MainActivity;
-import com.xm.cygcore.R;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,20 +45,20 @@ public class XmShortCutUtil {
     /**
      * 创建快捷方式
      */
-    public void createShortCut() {
+    public void createShortCut(Class startActivityClass) {
         if (!hasShortcut(mContext)) {
-            goAddShortCut();
+            goAddShortCut(startActivityClass);
         }
     }
 
     /**
      * 创建桌面快捷方式
      */
-    private void goAddShortCut() {
+    private void goAddShortCut(Class startActivityClass) {
         Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
         shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, getAppName(mContext));
 
-        Intent intent = new Intent(mContext, MainActivity.class); //设置点击图标处理
+        Intent intent = new Intent(mContext, startActivityClass); //设置点击图标处理
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setAction(Intent.ACTION_MAIN);
         shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
