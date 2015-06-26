@@ -9,7 +9,7 @@
         android:id="@+id/img_web_multi_item_conver"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:layout_alignParentLeft="true"
         android:layout_centerInParent="true"/>
 

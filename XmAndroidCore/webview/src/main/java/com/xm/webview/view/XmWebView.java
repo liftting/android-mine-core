@@ -23,6 +23,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.xm.log.base.XmLogger;
+import com.xm.utils.NetWorkUtil;
 import com.xm.webview.R;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
@@ -59,6 +60,7 @@ public class XmWebView extends WebView {
     private XmAdverIntercept mAdverIntercept;
 
     private static final int API = android.os.Build.VERSION.SDK_INT;
+    private static final String APP_CACHE_DIRNAME = "XMWEB";
 
     public XmWebView(Activity context, WebScanHandler scanHandler) {
         super(context);
@@ -140,10 +142,23 @@ public class XmWebView extends WebView {
             // We're in Incognito mode, reject
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         }
+
+        //缓存
         settings.setDomStorageEnabled(true);
         settings.setAppCacheEnabled(true);
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        if (NetWorkUtil.hasNetWork(mContext)) {
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        } else {
+            settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
         settings.setDatabaseEnabled(true);
+        settings.setAppCachePath(context.getDir("appcache", 0).getPath());
+        settings.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
+        if (API < Build.VERSION_CODES.KITKAT) {
+            settings.setDatabasePath(context.getDir("databases", 0).getPath());
+        }
+
+
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
@@ -156,11 +171,7 @@ public class XmWebView extends WebView {
             settings.setAllowUniversalAccessFromFileURLs(false);
         }
 
-        settings.setAppCachePath(context.getDir("appcache", 0).getPath());
-        settings.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
-        if (API < Build.VERSION_CODES.KITKAT) {
-            settings.setDatabasePath(context.getDir("databases", 0).getPath());
-        }
+
     }
 
     // 处理title一些信息
@@ -453,8 +464,9 @@ public class XmWebView extends WebView {
 
     /**
      * 截取webView可视区域的截图
-     *
+     * <p/>
      * 前提：WebView要设置webView.setDrawingCacheEnabled(true);
+     *
      * @return
      */
     public Bitmap captureWebViewVisibleSize() {

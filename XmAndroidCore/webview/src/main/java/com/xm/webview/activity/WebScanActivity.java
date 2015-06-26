@@ -28,6 +28,7 @@ import com.xm.webview.view.XmWebView;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +103,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private WebViewBean getWrapWebView() {
         XmWebView webView = new XmWebView(this, this);
         WebViewBean webViewBean = new WebViewBean(new RelativeLayout(this), webView);
-        webViewBean.getWrapContent().setDrawingCacheEnabled(true); //
+//        webViewBean.getWrapContent().setDrawingCacheEnabled(true);
         return webViewBean;
     }
 
@@ -263,31 +264,70 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     }
 
     public void onToolMultiWindows(View v) {
-        showChoiceWebView();
+        showMultiWindow();
     }
 
     public void onToolMenu(View v) {
         mMenuContainer.setVisibility(View.VISIBLE);
     }
 
-    private void addWebView() {
+    // -- menu窗口显示时
 
-//        XmWebView newTab = new XmWebView(this, this); // 设置控制回调
-//        mWebViewList.add(newTab);
-//        showChoiceWebView(newTab);
+    public void onMenuToolSetting(View v) {
 
     }
 
-    private void showChoiceWebView() {
+    public void onMenuToolBack(View v) {
 
-//        mWebContainer.removeAllViews();
-//        mCurrentView = webView;
-//        mWebContainer.addView(mCurrentView, MATCH_PARENT);
+    }
 
-        // 清除掉，下次可以看到最新的bitmap
-        for (WebViewBean bean : mWebViewList) {
-            bean.getWrapContent().destroyDrawingCache();
-        }
+    public void onMenuToolShare(View v) {
+
+    }
+
+
+    // --
+
+    // ---  多窗口时
+
+    public void onToolMultiCloseAll(View v) {
+
+    }
+
+    public void onToolMultiAddTab(View v) {
+        addWebView();
+        mWebMultiContainer.setVisibility(View.GONE);
+    }
+
+    public void onToolMultiReturn(View v) {
+        mWebMultiContainer.setVisibility(View.GONE);
+    }
+
+    // --
+
+
+    private void addWebView() {
+
+        XmWebView newTab = new XmWebView(this, this); // 设置控制回调
+        WebViewBean bean = getWrapWebView();
+        mWebViewList.add(bean);
+        showChoiceWebView(newTab);
+
+    }
+
+    /**
+     * 显示选择的webView
+     *
+     * @param webView
+     */
+    private void showChoiceWebView(XmWebView webView) {
+
+        mWebContainer.removeAllViews();
+        mCurrentView = webView;
+        mWebContainer.addView(webView, MATCH_PARENT);
+    }
+
+    private void showMultiWindow() {
 
         mWebMultiContainer.setVisibility(View.VISIBLE);
         mMultiAdapter.notifyDataSetChanged();
@@ -344,10 +384,16 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
         }
 
         public Bitmap getDrawingCacheBitmap() {
-            // 要压缩
-            BitmapFactory.Options scaleOption = new BitmapFactory.Options();
-            scaleOption.inJustDecodeBounds = true;
+
+            mViewWrapper.setDrawingCacheEnabled(true);
+            mViewWrapper.buildDrawingCache(true);
+
+            //
             Bitmap bitmap = comp(mViewWrapper.getDrawingCache());
+
+            // 压缩完成之后，给释放掉
+            mViewWrapper.setDrawingCacheEnabled(false);
+            mViewWrapper.destroyDrawingCache();
             return bitmap;
         }
 
@@ -359,19 +405,43 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
          */
         private Bitmap comp(Bitmap image) {
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            if (baos.toByteArray().length / 1024 > 1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
-                baos.reset();//重置baos即清空baos
-                image.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里压缩50%，把压缩后的数据存放到baos中
-            }
-            ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
-            BitmapFactory.Options newOpts = new BitmapFactory.Options();
-            newOpts.inJustDecodeBounds = false;
-            newOpts.inSampleSize = 12;//设置缩放比例
-            //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
+            ByteArrayOutputStream baos = null;
+            ByteArrayInputStream isBm = null;
+            Bitmap bitmap = null;
+            try {
+                baos = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                if (baos.toByteArray().length / 1024 > 1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
+                    baos.reset();//重置baos即清空baos
+                    image.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里压缩50%，把压缩后的数据存放到baos中
+                }
+                isBm = new ByteArrayInputStream(baos.toByteArray());
+                BitmapFactory.Options newOpts = new BitmapFactory.Options();
+                newOpts.inJustDecodeBounds = false;
+                newOpts.inSampleSize = 12;//设置缩放比例
+                //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
 
-            Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
+                bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
+            } finally {
+                if (baos != null) {
+                    try {
+                        baos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (isBm != null) {
+                    try {
+                        isBm.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+
             return bitmap;//压缩好比例大小后再进行质量压缩
         }
 
