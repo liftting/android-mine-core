@@ -22,6 +22,8 @@ public class WebSettingActivity extends Activity {
 
     public void onAdverIntecept(View view) {
         //
-        
+
+
+
     }
 }

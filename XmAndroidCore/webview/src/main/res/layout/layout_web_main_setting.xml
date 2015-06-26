@@ -3,11 +3,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -16,7 +19,14 @@
             android:textSize="14sp"
             android:textColor="@color/content_light1"
             android:layout_centerVertical="true"
-            android:onClick="onAdverIntecept"/>
+            android:onClick="onAdverIntecept" />
+
+        <com.xm.ui.switchbutton.SwitchButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_alignParentRight="true"
+            style="@style/switchButtonCommon" />
 
     </RelativeLayout>
 

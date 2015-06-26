@@ -1,6 +1,7 @@
 package com.xm.webview.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
@@ -274,7 +275,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     // -- menu窗口显示时
 
     public void onMenuToolSetting(View v) {
-
+        Intent intent = new Intent();
+        intent.setClass(this, WebSettingActivity.class);
+        startActivity(intent);
     }
 
     public void onMenuToolBack(View v) {
