@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.xm.log.base.XmLogger;
+import com.xm.utils.PreferencesUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class XmAdverIntercept {
 
     private static final Set<String> mBlockedDomainsList = new HashSet<String>();
     private static final Locale mLocale = Locale.getDefault();
+    private PreferencesUtil instance;
 
     public static XmAdverIntercept getInstance(Context context) {
         if (mInstance == null) {
@@ -40,14 +42,15 @@ public class XmAdverIntercept {
         if (mBlockedDomainsList.isEmpty() && Constants.FULL_VERSION) {
             loadBlockedDomainsList(context);
         }
-        isAdIntercept = PreferencesUtil.getInstance().getBoolean(PreferencesUtil.SP_AD_INTERCEPT);
-        isAdIntercept = true;
+        instance = PreferencesUtil.getInstance(context);
+        isAdIntercept = instance.getBoolean(Constants.SP_WEB_AD_NAME);
+//        isAdIntercept = true;
     }
 
     public void updatePreference() {
-        isAdIntercept = PreferencesUtil.getInstance().getBoolean(PreferencesUtil.SP_AD_INTERCEPT);
+        isAdIntercept = instance.getBoolean(Constants.SP_WEB_AD_NAME);
 
-        isAdIntercept = true;
+//        isAdIntercept = true;
     }
 
     private void loadBlockedDomainsList(final Context context) {

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.xm.utils"
-        minSdkVersion 8
+        minSdkVersion 11
         targetSdkVersion 17
         versionCode 1
         versionName "1.0"

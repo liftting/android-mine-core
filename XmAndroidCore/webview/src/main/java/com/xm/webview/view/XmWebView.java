@@ -1,8 +1,10 @@
 package com.xm.webview.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.MailTo;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.GeolocationPermissions;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
@@ -24,7 +27,9 @@ import android.webkit.WebViewClient;
 
 import com.xm.log.base.XmLogger;
 import com.xm.utils.NetWorkUtil;
+import com.xm.utils.PreferencesUtil;
 import com.xm.webview.R;
+import com.xm.webview.controller.WebDownLoadListener;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
 import com.xm.webview.util.Constants;
@@ -51,6 +56,7 @@ public class XmWebView extends WebView {
     private WebScanHandler mScanHandler;
     private XmScanListener mScanListener;
     private WebSettings mWebSettings;
+    private PreferencesUtil mPreferenceUtil;
 
     private Title mTitle;
     private Map<String, String> mTitleMap = new HashMap<String, String>();
@@ -77,6 +83,7 @@ public class XmWebView extends WebView {
         mScanListener = new XmScanListener(this, mScanHandler, gestureDetector);
         mIntentUtils = new IntentUtils(mContext);
         mAdverIntercept = XmAdverIntercept.getInstance(mContext);
+        mPreferenceUtil = PreferencesUtil.getInstance(mContext);
 
         initWebSettings();
 
@@ -94,6 +101,7 @@ public class XmWebView extends WebView {
         setAlwaysDrawnWithCacheEnabled(false);
         setBackgroundColor(mContext.getResources().getColor(android.R.color.white));
 
+
         if (API > 15) {
             setBackground(null);
             getRootView().setBackground(null);
@@ -106,6 +114,8 @@ public class XmWebView extends WebView {
         setWebViewClient(mWebViewClient);
 
         setOnTouchListener(mScanListener);
+        //
+        setDownloadListener(new WebDownLoadListener(mContext));
 
 //        mDefaultUserAgent = getSettings().getUserAgentString();
         mWebSettings = getSettings();
@@ -165,12 +175,72 @@ public class XmWebView extends WebView {
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(true);
         settings.setDefaultTextEncodingName("utf-8");
+
+        // js support
         settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+
         if (API > 16) {
             settings.setAllowFileAccessFromFileURLs(false);
             settings.setAllowUniversalAccessFromFileURLs(false);
         }
 
+        settings.setUserAgentString(
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D5145e Safari/9537.53");
+
+        // 文本重排 处理缩放时，文字自动重排功能
+
+        initPreferenceSetting(settings);
+
+        jsSetting();
+
+    }
+
+    private void jsSetting() {
+        this.addJavascriptInterface(new InJavaScriptLocalObj(), "js_method");
+    }
+
+    final class InJavaScriptLocalObj {
+        public void showSource(String html) {
+            logger.d("this is html page:" + html);
+        }
+    }
+
+    private void initPreferenceSetting(WebSettings settings) {
+        //设置文本文字大小
+        int sizeTag = mPreferenceUtil.getInt(Constants.SP_WEB_TEXTSIZE_NAME);
+        sizeTag = 3;
+        // api need 14
+        switch (sizeTag) {
+            case 1:
+                settings.setTextZoom(200);
+                break;
+            case 2:
+                settings.setTextZoom(150);
+                break;
+            case 3:
+                settings.setTextZoom(100);
+                break;
+            case 4:
+                settings.setTextZoom(75);
+                break;
+            case 5:
+                settings.setTextZoom(50);
+                break;
+        }
+
+//        mPreferenceUtil.putBoolean(Constants.SP_WEB_NOIMG,true);
+        settings.setBlockNetworkImage(mPreferenceUtil.getBoolean(Constants.SP_WEB_NOIMG)); // 配置是否显示图片
+
+        settings.setSupportMultipleWindows(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+
+        // 设置flash (这个是启用adobe flash , 4.4 and more 过时，没有效果)
+        if (API < 19) {
+            settings.setPluginState(WebSettings.PluginState.ON);
+        }
 
     }
 
@@ -212,7 +282,6 @@ public class XmWebView extends WebView {
         @Override
         public void onPageFinished(WebView view, String url) {
             logger.d("webLoading:onPageFinished");
-            super.onPageFinished(view, url);
 
             if (view.getTitle() == null || view.getTitle().isEmpty()) {
                 mTitle.setTitle(mContext.getString(R.string.default_web_title));
@@ -233,6 +302,10 @@ public class XmWebView extends WebView {
 //            }
 
 //            mBrowserController.update();
+
+            view.loadUrl("javascript:window.js_method.showSource('22')"); // iqiyi
+            super.onPageFinished(view, url);
+
 
         }
 
@@ -381,29 +454,74 @@ public class XmWebView extends WebView {
 
 
         @Override
-        public void onShowCustomView(View view, CustomViewCallback callback) {
-            //通知webview 要显示一个custom view ，主要是视频全屏 h5 support
-            mScanHandler.onShowCustomView(view, callback);
-            super.onShowCustomView(view, callback);
-        }
-
-        @Override
-        public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
-            mScanHandler.onShowCustomView(view, requestedOrientation, callback);
-            super.onShowCustomView(view, requestedOrientation, callback);
-        }
-
-        @Override
-        public void onHideCustomView() {
-            mScanHandler.onHideCustomView();
-            super.onHideCustomView();
-        }
-
-        @Override
         public void onProgressChanged(WebView view, int newProgress) {
             if (isShown()) {
                 mScanHandler.updateProgress(newProgress);
             }
+        }
+
+
+        @Override
+        public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
+            final boolean remember = true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(mContext.getString(R.string.location_title));
+            String org;
+            if (origin.length() > 50) {
+                org = origin.subSequence(0, 50) + "...";
+            } else {
+                org = origin;
+            }
+            builder.setMessage(org + mContext.getString(R.string.location_message))
+                    .setCancelable(true)
+                    .setPositiveButton(mContext.getString(R.string.location_allow),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    callback.invoke(origin, true, remember);
+                                }
+                            }
+                    )
+                    .setNegativeButton(mContext.getString(R.string.location_cancel_allow),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    callback.invoke(origin, false, remember);
+                                }
+                            }
+                    );
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        // video play
+        // 视频播放时，全屏会调用
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            //通知webview 要显示一个custom view ，主要是视频全屏 h5 support
+            logger.d("webLoading:--enter onShowCustomView");
+            mScanHandler.onShowCustomView(view, callback);
+            super.onShowCustomView(view, callback);
+        }
+
+        // 视频播放退出全屏回调
+        @Override
+        public void onHideCustomView() {
+            logger.d("webLoading:--enter onHideCustomView");
+            mScanHandler.onHideCustomView();
+            super.onHideCustomView();
+        }
+
+        // 视频加载默认的图标
+        @Override
+        public Bitmap getDefaultVideoPoster() {
+            return super.getDefaultVideoPoster();
+        }
+
+        // 视频加载时loading
+        @Override
+        public View getVideoLoadingProgressView() {
+            return super.getVideoLoadingProgressView();
         }
     }
 

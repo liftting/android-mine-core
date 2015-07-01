@@ -44,4 +44,16 @@ public final class Constants {
 	public static final int PROXY_ORBOT = 1;
 	public static final int PROXY_I2P = 2;
 	public static final int PROXY_MANUAL = 3;
+
+
+
+    // add sp name
+    public static final  String SP_WEB_AD_NAME = "sp_web_ad";
+    public static final  String SP_WEB_TEXTSIZE_NAME = "sp_web_textsize";
+    public static final String SP_WEB_NOIMG = "sp_no_image";
+    public static final String SP_WEB_DOWN_PATH = "sp_down_path";
+
+    public static final String SP_NAME = "xm_web";
+
+
 }

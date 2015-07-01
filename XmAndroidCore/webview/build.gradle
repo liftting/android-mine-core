@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.xm.webview"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,5 @@ dependencies {
     compile project(':util')
     compile project(':ui')
     compile files('libs/nineoldandroids-2.4.0.jar')
+    compile 'com.android.support:percent:22.2.0'
 }

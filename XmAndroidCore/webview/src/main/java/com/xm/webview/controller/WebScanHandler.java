@@ -1,5 +1,6 @@
 package com.xm.webview.controller;
 
+import android.graphics.Bitmap;
 import android.os.Message;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -33,4 +34,10 @@ public interface WebScanHandler {
     public void updateProgress(int n);
 
     public void updateHistory(String title, String url);
+
+    // video
+    public Bitmap getDefaultVideoPoster();
+
+    public View getVideoLoadingProgressView();
+
 }

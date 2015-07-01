@@ -1,10 +1,8 @@
-package com.xm.webview.util;
+package com.xm.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
-
-import com.xm.webview.XmWebApplication;
+import android.text.TextUtils;
 
 
 /**
@@ -12,21 +10,26 @@ import com.xm.webview.XmWebApplication;
  */
 public class PreferencesUtil {
 
-    private static final String XM_WEB_SP_NAME = "xm_web";
-    public static final String SP_AD_INTERCEPT = "xm_wen_ad";
+    private static String XM_WEB_SP_NAME = "default_sp";
 
     private static SharedPreferences mSharedPrefs;
     private static PreferencesUtil instance;
 
-    public static PreferencesUtil getInstance() {
+    public static PreferencesUtil getInstance(Context context) {
         if (instance == null) {
-            instance = new PreferencesUtil();
+            instance = new PreferencesUtil(context);
         }
         return instance;
     }
 
-    private PreferencesUtil() {
-        mSharedPrefs = XmWebApplication.getContext().getSharedPreferences(XM_WEB_SP_NAME, Context.MODE_PRIVATE);
+    public static void initPreferenceName(String preferenceName) {
+        if (!TextUtils.isEmpty(preferenceName)) {
+            XM_WEB_SP_NAME = preferenceName;
+        }
+    }
+
+    private PreferencesUtil(Context context) {
+        mSharedPrefs = context.getSharedPreferences(XM_WEB_SP_NAME, Context.MODE_PRIVATE);
     }
 
 
@@ -70,6 +73,16 @@ public class PreferencesUtil {
 
     public long getLong(String key) {
         return mSharedPrefs.getLong(key, 0);
+    }
+
+    public void putInt(String key, int value) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putLong(key, value);
+        editor.commit();
+    }
+
+    public int getInt(String key) {
+        return mSharedPrefs.getInt(key, 0);
     }
 
 

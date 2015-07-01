@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.xm.ui.switchbutton.SwitchButton;
 import com.xm.webview.R;
 
 /**
@@ -20,10 +21,5 @@ public class WebSettingActivity extends Activity {
 
     }
 
-    public void onAdverIntecept(View view) {
-        //
 
-
-
-    }
 }

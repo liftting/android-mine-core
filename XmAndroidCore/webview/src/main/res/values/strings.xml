@@ -7,4 +7,9 @@
 
     <string name="default_web_title">讯浏览</string>
 
+    <string name="location_title">定位服务</string>
+    <string name="location_message">请求定位服务</string>
+    <string name="location_allow">确定</string>
+    <string name="location_cancel_allow">取消</string>
+
 </resources>

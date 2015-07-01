@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.xm.utils.PreferencesUtil;
 import com.xm.webview.R;
 import com.xm.webview.adapter.XmWebViewListAdapter;
 import com.xm.webview.controller.TitleHandler;
@@ -24,6 +26,7 @@ import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.swipelist.SwipeDismissListViewTouchListener;
 import com.xm.webview.util.Constants;
 import com.xm.webview.view.AnimatedProgressBar;
+import com.xm.webview.view.SwipeBackView;
 import com.xm.webview.view.WebTitleView;
 import com.xm.webview.view.XmWebView;
 
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class WebScanActivity extends Activity implements WebScanHandler, TitleHandler {
+public class WebScanActivity extends Activity implements WebScanHandler, TitleHandler, SwipeBackView.OnOperateListener {
 
     private FrameLayout mWebContainer;
     private XmWebView mCurrentView; // 多个
@@ -52,8 +55,13 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private XmWebViewListAdapter mMultiAdapter;
 
     //menu 的容器
-    private LinearLayout mMenuContainer;
+    private LinearLayout mWebMenuContainer;
 
+    // video
+    private Bitmap mDefaultVideoPoster;
+    private View mVideoProgressView;
+
+    private PreferencesUtil mPreUtil;
 
     private static final ViewGroup.LayoutParams MATCH_PARENT = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -62,11 +70,25 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        configView(R.layout.activity_main);
 
-
+        preferenceInit();
         init();
 
+    }
+
+    private void configView(int layoutId) {
+        ViewGroup contentView = (ViewGroup) LayoutInflater.from(this).inflate(layoutId, null);
+
+        SwipeBackView rootView = new SwipeBackView(this);
+        rootView.addView(contentView,
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT)
+        );
+
+        rootView.setOperateListener(this);
+
+        setContentView(rootView);
     }
 
     private void init() {
@@ -98,7 +120,18 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
 
         // menu
-        mMenuContainer = (LinearLayout) findViewById(R.id.rly_web_menu_container);
+        mWebMenuContainer = (LinearLayout) findViewById(R.id.rly_web_menu_container);
+    }
+
+    private void preferenceInit() {
+        mPreUtil = PreferencesUtil.getInstance(this);
+        // 手机存储
+        String downPath = this.getFilesDir().getAbsolutePath();
+
+        // sdcard的存储地址
+        downPath = this.getExternalFilesDir(null).getAbsolutePath();
+        mPreUtil.putString(Constants.SP_WEB_DOWN_PATH, downPath);
+
     }
 
     private WebViewBean getWrapWebView() {
@@ -219,9 +252,22 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     }
 
-    public void toolMenuClick(View v) {
+    @Override
+    public Bitmap getDefaultVideoPoster() {
+        if (mDefaultVideoPoster == null) {
+            mDefaultVideoPoster = BitmapFactory.decodeResource(getResources(),
+                    android.R.drawable.ic_media_play);
+        }
+        return mDefaultVideoPoster;
+    }
 
-        mCurrentView.loadUrl("http://www.baidu.com");
+    @Override
+    public View getVideoLoadingProgressView() {
+        if (mVideoProgressView == null) {
+            LayoutInflater inflater = LayoutInflater.from(this);
+            mVideoProgressView = inflater.inflate(R.layout.video_loading_progress, null);
+        }
+        return mVideoProgressView;
     }
 
     @Override
@@ -269,7 +315,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     }
 
     public void onToolMenu(View v) {
-        mMenuContainer.setVisibility(View.VISIBLE);
+        mWebMenuContainer.setVisibility(View.VISIBLE);
     }
 
     // -- menu窗口显示时
@@ -281,7 +327,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     }
 
     public void onMenuToolBack(View v) {
-
+        mWebMenuContainer.setVisibility(View.GONE);
     }
 
     public void onMenuToolShare(View v) {
@@ -356,6 +402,21 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
         // we don't look for swipes.
         mSwipeListView.setOnScrollListener(touchListener.makeScrollListener());
 
+    }
+
+    @Override
+    public void onBack() {
+
+        if (mCurrentView != null && mCurrentView.canGoBack()) {
+            mCurrentView.goBack();
+        }
+    }
+
+    @Override
+    public void onForward() {
+        if (mCurrentView != null && mCurrentView.canGoForward()) {
+            mCurrentView.goForward();
+        }
     }
 
     /**

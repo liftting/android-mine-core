@@ -7,8 +7,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
+
+import com.xm.webview.XmWebApplication;
 
 import java.net.URISyntaxException;
 import java.util.regex.Matcher;
@@ -18,6 +22,8 @@ import java.util.regex.Matcher;
  */
 public class XmWebUtils {
 
+    private static int SCREEN_WIDTH = 0;
+    private static int SCREEN_HEIGHT = 0;
 
     public static int convertDpToPixels(int dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
@@ -41,5 +47,24 @@ public class XmWebUtils {
         intent.putExtra(Intent.EXTRA_CC, cc);
         intent.setType("message/rfc822");
         return intent;
+    }
+
+    public static int getScreenWidth() {
+
+        if (SCREEN_WIDTH == 0) {
+            WindowManager w = (WindowManager) XmWebApplication.getContext().getSystemService(
+                    Context.WINDOW_SERVICE);
+            Display d = w.getDefaultDisplay();
+            SCREEN_WIDTH = d.getWidth();
+            SCREEN_HEIGHT = d.getHeight();
+        }
+
+        if (SCREEN_WIDTH > 0 && SCREEN_HEIGHT > 0 && SCREEN_WIDTH > SCREEN_HEIGHT) {
+            int temp = SCREEN_HEIGHT;
+            SCREEN_HEIGHT = SCREEN_WIDTH;
+            SCREEN_WIDTH = temp;
+        }
+
+        return SCREEN_WIDTH;
     }
 }
