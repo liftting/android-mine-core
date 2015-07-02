@@ -94,6 +94,7 @@ public class ScrollContainer extends LinearLayout {
         logger.d("enter onTnerceptTouchEvent");
 
         float dy = ev.getY() - mLastPosition.y;
+        float dx = ev.getX() - mLastPosition.x;
 
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -107,7 +108,10 @@ public class ScrollContainer extends LinearLayout {
                     mDragging = true;
                 }
 
-                if (getScrollY() < mTopViewHeight && dy < 0 || getScrollY() >= mTopViewHeight && dy > 0) {
+
+                if (getScrollY() < mTopViewHeight && dy < 0 && Math.abs(dy) > Math.abs(dx)
+                        || getScrollY() >= mTopViewHeight && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
+                    logger.d("lian:need lanjie");
                     return true;
                 }
 
@@ -154,14 +158,30 @@ public class ScrollContainer extends LinearLayout {
                     scrollBy(0, (int) -dy);
                     lastY = y;
                 }
+
+                if ((getScrollY() >= mTopViewHeight) && !isSend) {
+                    isSend = true;
+                    logger.d("lian:begin dispatch");
+                    mScrollView.dispatchTouchEvent(event);
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
                 mDragging = false;
+                isSend = false;
                 break;
 
         }
 
         return super.onTouchEvent(event);
     }
+
+    private boolean isNeedSendEvent() {
+        if (isSend && getScrollY() < mTopViewHeight - 4) {
+            isSend = true;
+        }
+        return isSend;
+    }
+
+    private boolean isSend = false;
 }

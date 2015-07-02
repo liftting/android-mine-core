@@ -5,141 +5,148 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ly_webview_toolbar">
+        android:orientation="vertical">
 
-        <com.xm.webview.view.ScrollContainer
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/scrollContainerView"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_above="@+id/ly_webview_toolbar">
 
-
-            <LinearLayout
+            <com.xm.webview.view.ScrollContainer
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="vertical"
-                android:id="@+id/headerView"
-                android:gravity="center_vertical"
-                android:background="@color/black"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
+                android:layout_height="match_parent"
+                android:id="@+id/scrollContainerView"
+                android:orientation="vertical">
 
-                <com.xm.webview.view.WebTitleView
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/title_view_container" />
+                    android:layout_height="42dp"
+                    android:orientation="vertical"
+                    android:id="@+id/headerView"
+                    android:gravity="center_vertical"
+                    android:background="@color/black"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
-                <com.xm.webview.view.AnimatedProgressBar
-                    android:id="@+id/progress_view"
+                    <com.xm.webview.view.WebTitleView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/title_view_container" />
+
+                    <com.xm.webview.view.AnimatedProgressBar
+                        android:id="@+id/progress_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        custom:backgroundColor="#00000000"
+                        custom:bidirectionalAnimate="false"
+                        custom:progressColor="@color/content_red_light" />
+
+                </LinearLayout>
+
+                <!-- 店铺商品列表 -->
+                <com.xm.webview.view.ScrollChangeFrameLayout
+                    android:id="@+id/scorllView"
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    custom:backgroundColor="#00000000"
-                    custom:bidirectionalAnimate="false"
-                    custom:progressColor="@color/content_red_light" />
+                    android:layout_height="match_parent" />
 
-            </LinearLayout>
-
-            <!-- 店铺商品列表 -->
-            <FrameLayout
-                android:id="@+id/scorllView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </com.xm.webview.view.ScrollContainer>
+            </com.xm.webview.view.ScrollContainer>
 
 
+        </FrameLayout>
+
+        <!-- 底部 -->
+
+        <LinearLayout
+            android:id="@+id/ly_webview_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/web_tool_bar_height"
+            android:background="@color/black"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:weightSum="5"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:onClick="onToolGoBack">
+
+                <TextView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/toolbar_backward"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:onClick="onToolGoForward">
+
+                <TextView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/toolbar_forward"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:onClick="onToolMenu">
 
 
-    </FrameLayout>
+                <TextView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/toolbar_menu"
+                    android:layout_centerInParent="true" />
 
-    <!-- 底部 -->
+            </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/ly_webview_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/web_tool_bar_height"
-        android:background="@color/black"
-        android:layout_alignParentBottom="true"
-        android:weightSum="5"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp">
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:onClick="onToolGoHome">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:onClick="onToolGoBack">
+                <TextView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/toolbar_home"
+                    android:layout_centerInParent="true" />
 
-            <TextView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/toolbar_backward"
-                android:layout_centerInParent="true" />
+            </RelativeLayout>
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:onClick="onToolMultiWindows">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:onClick="onToolGoForward">
+                <TextView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/toolbar_multiwindow"
+                    android:layout_centerInParent="true" />
 
-            <TextView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/toolbar_forward"
-                android:layout_centerInParent="true" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:onClick="onToolMenu">
+            </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/toolbar_menu"
-                android:layout_centerInParent="true" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:onClick="onToolGoHome">
-
-            <TextView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/toolbar_home"
-                android:layout_centerInParent="true" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:onClick="onToolMultiWindows">
-
-            <TextView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/toolbar_multiwindow"
-                android:layout_centerInParent="true" />
-
-        </RelativeLayout>
-
+        </LinearLayout>
 
     </LinearLayout>
 

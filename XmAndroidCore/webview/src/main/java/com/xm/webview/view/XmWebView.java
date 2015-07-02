@@ -593,4 +593,8 @@ public class XmWebView extends WebView {
         return bmp;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
+    }
 }
