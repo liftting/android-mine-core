@@ -1,10 +1,22 @@
 package com.xm.webview.view;
 
+import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Transformation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,7 +35,7 @@ public class WebTitleView extends RelativeLayout {
     private String mTitle;
 
     private TitleHandler mTitleHandler;
-    private TextView mTvTitle;
+    private AutoCompleteTextView mSearch;
     private ImageView mImgCollect;
 
     public WebTitleView(Context context) {
@@ -47,7 +59,7 @@ public class WebTitleView extends RelativeLayout {
 
     private void setUp() {
         mTitleView = LayoutInflater.from(mContext).inflate(R.layout.layout_web_title_view, this);
-        mTvTitle = (TextView) mTitleView.findViewById(R.id.tv_web_title);
+        mSearch = (AutoCompleteTextView) mTitleView.findViewById(R.id.tv_web_title);
         mImgCollect = (ImageView) mTitleView.findViewById(R.id.img_web_address_collect);
 
         mImgCollect.setOnClickListener(new View.OnClickListener() {
@@ -59,14 +71,16 @@ public class WebTitleView extends RelativeLayout {
             }
         });
 
+    }
 
+    public AutoCompleteTextView getAutoTextView() {
+        return mSearch;
     }
 
 
     public void setTitle(String title) {
         if (title == null) title = "";
-        mTvTitle.setText(title);
+        mSearch.setText(title);
     }
-
 
 }

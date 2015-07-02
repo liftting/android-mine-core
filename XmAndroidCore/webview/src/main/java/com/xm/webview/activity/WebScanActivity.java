@@ -1,22 +1,36 @@
 package com.xm.webview.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Transformation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.xm.utils.PreferencesUtil;
 import com.xm.webview.R;
@@ -33,6 +47,8 @@ import com.xm.webview.view.XmWebView;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +58,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private FrameLayout mWebContainer;
     private XmWebView mCurrentView; // 多个
 
-    private WebTitleView mTitleView; // 一个，
-    private LinearLayout mHeadContainer;
-    private AnimatedProgressBar mProgressBar;
+    private WebTitleView mTitleViewFloat; // 一个，
+    private LinearLayout mHeadContainerFloat;
+    private AnimatedProgressBar mProgressBarFloat;
 
     private final List<WebViewBean> mWebViewList = new ArrayList<WebViewBean>();
     private String mDefaultTitle;
@@ -62,6 +78,9 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private View mVideoProgressView;
 
     private PreferencesUtil mPreUtil;
+
+    // search
+    private String mSearchText = Constants.BAIDU_SEARCH;
 
     private static final ViewGroup.LayoutParams MATCH_PARENT = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -93,34 +112,40 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     private void init() {
         mWebViewList.clear();
-
-
         mDefaultTitle = getString(R.string.default_web_title);
-        mTitleView = (WebTitleView) findViewById(R.id.title_view_container);
-        mProgressBar = (AnimatedProgressBar) findViewById(R.id.progress_view);
-        mWebContainer = (FrameLayout) findViewById(R.id.fly_webview_container);
-        mHeadContainer = (LinearLayout) findViewById(R.id.ly_webview_container_title);
+
+
+        mWebContainer = (FrameLayout) findViewById(R.id.scorllView);
 
         mWebMultiContainer = findViewById(R.id.web_multi_container);
         mSwipeListView = (ListView) findViewById(R.id.web_swipe_listview);
-
 
         WebViewBean bean = getWrapWebView();
         mCurrentView = bean.getWebView();
         mWebViewList.add(bean);
         mWebContainer.addView(bean.getWrapContent(), MATCH_PARENT);
 
-
         mMultiAdapter = new XmWebViewListAdapter(this, R.layout.layout_web_multi_window_item, mWebViewList);
         mSwipeListView.setAdapter(mMultiAdapter);
-
         mWebContainer.setDrawingCacheEnabled(true);
-
+        configTitle();
         configMultiList();
 
 
         // menu
         mWebMenuContainer = (LinearLayout) findViewById(R.id.rly_web_menu_container);
+        mSearch = mTitleViewFloat.getAutoTextView();
+//        mSearch.setFocusable(false);
+
+        configSearch();
+
+    }
+
+    private void configTitle() {
+        mTitleViewFloat = (WebTitleView) findViewById(R.id.title_view_container);
+        mProgressBarFloat = (AnimatedProgressBar) findViewById(R.id.progress_view);
+        mHeadContainerFloat = (LinearLayout) findViewById(R.id.headerView);
+
     }
 
     private void preferenceInit() {
@@ -164,57 +189,57 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     @Override
     public void showTitleBar() {
-        if (mHeadContainer.getVisibility() == View.VISIBLE) return;
-        Animation show = AnimationUtils.loadAnimation(this, R.anim.slide_down);
-        show.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mHeadContainer.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-        });
-        mHeadContainer.startAnimation(show);
+//        if (mHeadContainerFloat.getVisibility() == View.VISIBLE) return;
+//        Animation show = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+//        show.setAnimationListener(new Animation.AnimationListener() {
+//
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                mHeadContainerFloat.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//            }
+//
+//        });
+//        mHeadContainerFloat.startAnimation(show);
     }
 
     @Override
     public void toggleTitleBar() {
-        if (mHeadContainer.getVisibility() != View.VISIBLE) {
-            showTitleBar();
-        } else {
-            hideTitleBar();
-        }
+//        if (mHeadContainerFloat.getVisibility() != View.VISIBLE) {
+//            showTitleBar();
+//        } else {
+//            hideTitleBar();
+//        }
     }
 
     @Override
     public void hideTitleBar() {
-        if (mHeadContainer.getVisibility() == View.GONE) return;
-        Animation show = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        show.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mHeadContainer.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-        });
-        mHeadContainer.startAnimation(show);
+//        if (mHeadContainerFloat.getVisibility() == View.INVISIBLE) return;
+//        Animation show = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+//        show.setAnimationListener(new Animation.AnimationListener() {
+//
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                mHeadContainerFloat.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//            }
+//
+//        });
+//        mHeadContainerFloat.startAnimation(show);
     }
 
     @Override
@@ -224,27 +249,28 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     @Override
     public void updateUrl(String title, boolean shortUrl) {
-        if (title == null || mTitleView == null) {
+        if (title == null || mTitleViewFloat == null) {
             return;
         }
         if (shortUrl && !title.startsWith(Constants.FILE)) {
             if (mCurrentView != null && !mCurrentView.getTitle().isEmpty()) {
-                mTitleView.setTitle(mCurrentView.getTitle());
+                mTitleViewFloat.setTitle(mCurrentView.getTitle());
+
             } else {
-                mTitleView.setTitle(mDefaultTitle);
+                mTitleViewFloat.setTitle(mDefaultTitle);
             }
 
         } else {
             if (title.startsWith(Constants.FILE)) {
                 title = "";
             }
-            mTitleView.setTitle(title);
+            mTitleViewFloat.setTitle(title);
         }
     }
 
     @Override
     public void updateProgress(int n) {
-        mProgressBar.setProgress(n);
+        mProgressBarFloat.setProgress(n);
     }
 
     @Override
@@ -512,5 +538,146 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     }
 
+
+    // --- search
+
+    private AutoCompleteTextView mSearch;
+
+    public void configSearch() {
+
+        SearchClass search = new SearchClass();
+//        mSearch.setCompoundDrawables(null, null, mRefreshIcon, null);
+        mSearch.setOnKeyListener(search.new KeyListener());
+        mSearch.setOnFocusChangeListener(search.new FocusChangeListener());
+        mSearch.setOnEditorActionListener(search.new EditorActionListener());
+        mSearch.setOnTouchListener(search.new TouchListener());
+
+//        mSearch.setFocusable(true);
+    }
+
+    private void searchTheWeb(String query) {
+        if (query.equals("")) {
+            return;
+        }
+        String SEARCH = mSearchText;
+        query = query.trim();
+        mCurrentView.stopLoading();
+
+        if (query.startsWith("www.")) {
+            query = Constants.HTTP + query;
+        } else if (query.startsWith("ftp.")) {
+            query = "ftp://" + query;
+        }
+
+        boolean containsPeriod = query.contains(".");
+        boolean isIPAddress = (TextUtils.isDigitsOnly(query.replace(".", ""))
+                && (query.replace(".", "").length() >= 4) && query.contains("."));
+        boolean aboutScheme = query.contains("about:");
+        boolean validURL = (query.startsWith("ftp://") || query.startsWith(Constants.HTTP)
+                || query.startsWith(Constants.FILE) || query.startsWith(Constants.HTTPS))
+                || isIPAddress;
+        boolean isSearch = ((query.contains(" ") || !containsPeriod) && !aboutScheme);
+
+        if (isIPAddress
+                && (!query.startsWith(Constants.HTTP) || !query.startsWith(Constants.HTTPS))) {
+            query = Constants.HTTP + query;
+        }
+
+        if (isSearch) {
+            try {
+                query = URLEncoder.encode(query, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            mCurrentView.loadUrl(SEARCH + query);
+        } else if (!validURL) {
+            mCurrentView.loadUrl(Constants.HTTP + query);
+        } else {
+            mCurrentView.loadUrl(query);
+        }
+    }
+
+    private class SearchClass {
+
+        public class KeyListener implements View.OnKeyListener {
+
+            @Override
+            public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
+
+                switch (arg1) {
+                    case KeyEvent.KEYCODE_ENTER:
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(mSearch.getWindowToken(), 0);
+                        searchTheWeb(mSearch.getText().toString());
+                        if (mCurrentView != null) {
+                            mCurrentView.requestFocus();
+                        }
+                        return true;
+                    default:
+                        break;
+                }
+                return false;
+            }
+
+        }
+
+        public class EditorActionListener implements TextView.OnEditorActionListener {
+            @Override
+            public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+                // hide the keyboard and search the web when the enter key
+                // button is pressed
+                if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_DONE
+                        || actionId == EditorInfo.IME_ACTION_NEXT
+                        || actionId == EditorInfo.IME_ACTION_SEND
+                        || actionId == EditorInfo.IME_ACTION_SEARCH
+                        || (arg2.getAction() == KeyEvent.KEYCODE_ENTER)) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mSearch.getWindowToken(), 0);
+                    searchTheWeb(mSearch.getText().toString());
+                    if (mCurrentView != null) {
+                        mCurrentView.requestFocus();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public class FocusChangeListener implements View.OnFocusChangeListener {
+            @Override
+            public void onFocusChange(View v, final boolean hasFocus) {
+                if (!hasFocus && mCurrentView != null) {
+                    // 变成url地址
+                    updateUrl(mCurrentView.getUrl(), true);
+                } else if (hasFocus) {
+                    String url = mCurrentView.getUrl();
+                    if (url == null || url.startsWith(Constants.FILE)) {
+                        mSearch.setText("");
+                    } else {
+                        mSearch.setText(url);
+                    }
+                    //选中
+                    ((AutoCompleteTextView) v).selectAll(); // Hack to make sure
+                    // the text gets
+                    // selected
+                }
+
+                if (!hasFocus) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mSearch.getWindowToken(), 0);
+                }
+            }
+        }
+
+        public class TouchListener implements View.OnTouchListener {
+
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+
+        }
+    }
 
 }

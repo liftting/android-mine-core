@@ -44,7 +44,7 @@ public class XmScanListener implements View.OnTouchListener {
                     mScanHandler.showTitleBar();
                 } else {
                     //滑动到顶部时，
-                    mScanHandler.toggleTitleBar();
+//                    mScanHandler.toggleTitleBar();
                 }
             } else if ((mY - mLocation) < -SCROLL_UP_THRESHOLD) {
                 mScanHandler.hideTitleBar();
