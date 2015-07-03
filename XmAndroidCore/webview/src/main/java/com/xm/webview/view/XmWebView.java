@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.HttpAuthHandler;
+import android.webkit.JsPromptResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -28,8 +29,10 @@ import android.webkit.WebViewClient;
 import com.xm.log.base.XmLogger;
 import com.xm.utils.NetWorkUtil;
 import com.xm.utils.PreferencesUtil;
+import com.xm.utils.jsbridge.InjectedChromeClient;
 import com.xm.webview.R;
 import com.xm.webview.controller.WebDownLoadListener;
+import com.xm.webview.controller.WebJsScope;
 import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.controller.XmScanListener;
 import com.xm.webview.util.Constants;
@@ -73,7 +76,7 @@ public class XmWebView extends WebView {
         this.mContext = context;
 
         mWebViewClient = new XmWebViewClient(this);
-        mWebChromeClient = new XmWebViewChromeClient(this);
+        mWebChromeClient = new XmWebViewChromeClient(this, Constants.JS_INJECT_NAME, WebJsScope.class);
 
 //        mTitleView = new WebTitleView(mContext, this);
         mScanHandler = scanHandler;
@@ -110,12 +113,7 @@ public class XmWebView extends WebView {
         }
         setScrollbarFadingEnabled(true);
         setSaveEnabled(true);
-        setWebChromeClient(mWebChromeClient);
-        setWebViewClient(mWebViewClient);
 
-        setOnTouchListener(mScanListener);
-        //
-        setDownloadListener(new WebDownLoadListener(mContext));
 
 //        mDefaultUserAgent = getSettings().getUserAgentString();
         mWebSettings = getSettings();
@@ -123,7 +121,13 @@ public class XmWebView extends WebView {
         initializeSettings(getSettings(), mContext);
 //        initializePreferences(activity);
 
-        String defaultUrl = "http://www.baidu.com";
+        setWebChromeClient(mWebChromeClient);
+        setWebViewClient(mWebViewClient);
+        setOnTouchListener(mScanListener);
+        //
+        setDownloadListener(new WebDownLoadListener(mContext));
+
+        String defaultUrl = Constants.LOAD_DEFAULT_URL;
 
         if (defaultUrl != null) {
             if (!defaultUrl.trim().isEmpty()) {
@@ -413,10 +417,11 @@ public class XmWebView extends WebView {
     }
 
 
-    private class XmWebViewChromeClient extends WebChromeClient {
+    private class XmWebViewChromeClient extends InjectedChromeClient {
         private XmWebView webView;
 
-        public XmWebViewChromeClient(XmWebView view) {
+        public XmWebViewChromeClient(XmWebView view, String injectedName, Class injectedClass) {
+            super(injectedName, injectedClass);
             this.webView = view;
         }
 
@@ -455,6 +460,7 @@ public class XmWebView extends WebView {
 
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
             if (isShown()) {
                 mScanHandler.updateProgress(newProgress);
             }
@@ -522,6 +528,11 @@ public class XmWebView extends WebView {
         @Override
         public View getVideoLoadingProgressView() {
             return super.getVideoLoadingProgressView();
+        }
+
+        @Override
+        public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+            return super.onJsPrompt(view, url, message, defaultValue, result);
         }
     }
 

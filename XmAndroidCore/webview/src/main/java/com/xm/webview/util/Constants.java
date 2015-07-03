@@ -55,5 +55,8 @@ public final class Constants {
 
     public static final String SP_NAME = "xm_web";
 
+    public static final String JS_INJECT_NAME = "HostApp";
+    public static final String LOAD_DEFAULT_URL = "http://www.baidu.com";
+
 
 }

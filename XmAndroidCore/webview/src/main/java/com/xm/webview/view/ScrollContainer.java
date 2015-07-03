@@ -99,38 +99,60 @@ public class ScrollContainer extends LinearLayout {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastY = ev.getY();
+
                 break;
             case MotionEvent.ACTION_MOVE:
-                logger.d("move:dy:" + dy + " and getScrollY:" + getScrollY() + " and headerView height : " + mHeaderView.getMeasuredHeight() + " and isTopHidden:" + isTopHidden);
+                logger.d("move:dy:" + dy + " and getScrollY:" + getScrollY() + " and headerView height : " + mHeaderView.getMeasuredHeight() + " and headState:" + headState);
 
 
                 if (Math.abs(dy) > viewPagerTouchSlop) {
                     mDragging = true;
                 }
 
+                if (headState == STATE_CHANGE_TO_SEE || headState == STATE_CHANGE_TO_HIDE) {
+                    headState = STATE_CHILD_MOVE;
+                    return false;
+                }
 
-                if (getScrollY() < mTopViewHeight && dy < 0 && Math.abs(dy) > Math.abs(dx)
-                        || getScrollY() >= mTopViewHeight && dy > 0 && Math.abs(dy) > Math.abs(dx)) {
+                if ((headState == STATE_DEFAULT ||
+                        headState == STATE_MOVING) && Math.abs(dy) > Math.abs(dx)) {
                     logger.d("lian:need lanjie");
                     return true;
                 }
 
+
+                break;
+            case MotionEvent.ACTION_UP:
+                isSend = false;
+                headState = STATE_DEFAULT;
                 break;
         }
 
         return super.onInterceptTouchEvent(ev);
     }
 
+    private int headState = STATE_DEFAULT;
+
+    public static final int STATE_DEFAULT = 1; // 默认
+    public static final int STATE_MOVING = 2; // 顶部header在滑动
+    public static final int STATE_CHANGE_TO_SEE = 3; // header要全部看着
+    public static final int STATE_CHANGE_TO_HIDE = 4; // header 要全部消失
+    public static final int STATE_CHILD_MOVE = 5; // 子view获取到焦点，在滑动中
+
+
     @Override
     public void scrollTo(int x, int y) {
-        logger.d("enter scrollTo method");
-        if (y < 0) {
+        if (y <= 0) {
+            headState = STATE_CHANGE_TO_HIDE;
             y = 0;
         }
-        if (y > mTopViewHeight) {
+        if (y >= mTopViewHeight) {
             y = mTopViewHeight;
+            headState = STATE_CHANGE_TO_SEE;
         }
+        logger.d("enter scrollTo method and headState is :" + headState);
         if (y != getScrollY()) {
+            headState = STATE_MOVING;
             super.scrollTo(x, y);
         }
 
@@ -159,9 +181,11 @@ public class ScrollContainer extends LinearLayout {
                     lastY = y;
                 }
 
-                if ((getScrollY() >= mTopViewHeight) && !isSend) {
+                logger.d("move : dy-" + dy + " and headState" + headState + "and isSend is -" + isSend);
+
+                if (isNeedSendEvent() && !isSend) {
                     isSend = true;
-                    logger.d("lian:begin dispatch");
+                    logger.d("move : lian:begin dispatch");
                     mScrollView.dispatchTouchEvent(event);
                 }
                 break;
@@ -177,10 +201,18 @@ public class ScrollContainer extends LinearLayout {
     }
 
     private boolean isNeedSendEvent() {
-        if (isSend && getScrollY() < mTopViewHeight - 4) {
-            isSend = true;
+        boolean isNeedSend = false;
+        if (headState == STATE_CHANGE_TO_SEE) {
+            // 完整拉出来时
+            isNeedSend = true;
         }
-        return isSend;
+
+        if (headState == STATE_CHANGE_TO_HIDE) {
+            // 向上时，完全隐藏时
+            isNeedSend = true;
+        }
+
+        return isNeedSend;
     }
 
     private boolean isSend = false;
