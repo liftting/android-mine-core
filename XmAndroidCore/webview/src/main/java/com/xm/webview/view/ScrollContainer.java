@@ -17,6 +17,10 @@ import com.xm.webview.R;
 
 /**
  * Created by wm on 15/7/2.
+ *
+ * headerview 滑动组件
+ * 支持连续不间断滑动效果
+ *
  */
 public class ScrollContainer extends LinearLayout {
 
@@ -29,6 +33,14 @@ public class ScrollContainer extends LinearLayout {
     private int mTopViewHeight;
 
     private boolean mDragging;
+
+    private int headState = STATE_DEFAULT;
+
+    public static final int STATE_DEFAULT = 1; // 默认
+    public static final int STATE_MOVING = 2; // 顶部header在滑动
+    public static final int STATE_CHANGE_TO_SEE = 3; // header要全部看着
+    public static final int STATE_CHANGE_TO_HIDE = 4; // header 要全部消失
+    public static final int STATE_CHILD_MOVE = 5; // 子view获取到焦点，在滑动中
 
 
     private Point mLastPosition = new Point();
@@ -130,15 +142,6 @@ public class ScrollContainer extends LinearLayout {
 
         return super.onInterceptTouchEvent(ev);
     }
-
-    private int headState = STATE_DEFAULT;
-
-    public static final int STATE_DEFAULT = 1; // 默认
-    public static final int STATE_MOVING = 2; // 顶部header在滑动
-    public static final int STATE_CHANGE_TO_SEE = 3; // header要全部看着
-    public static final int STATE_CHANGE_TO_HIDE = 4; // header 要全部消失
-    public static final int STATE_CHILD_MOVE = 5; // 子view获取到焦点，在滑动中
-
 
     @Override
     public void scrollTo(int x, int y) {

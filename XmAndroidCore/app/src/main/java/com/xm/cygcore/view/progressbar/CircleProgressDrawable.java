@@ -8,8 +8,8 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.xm.cygcore.util.log.lib.server.XmLoggerFactory;
-import com.xm.cygcore.util.log.lib.base.XmLogger;
+import com.xm.log.base.XmLogger;
+import com.xm.log.server.XmLoggerFactory;
 
 /**
  * Created by wm on 15/5/4.
