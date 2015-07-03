@@ -1,35 +1,17 @@
-package com.xm.cygcore;
+package com.xm.push;
 
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-
-import com.xm.cygcore.view.dataloadview.pulltoload.XmAutoLoadListView;
-import com.xm.utils.XmShortCutUtil;
 
 
-public class MainActivity extends Activity {
-
-
-    private XmAutoLoadListView mLoadListView;
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layer_activity_main);
-        mLoadListView = (XmAutoLoadListView) findViewById(R.id.v_data_load_list);
-        String[] s = new String[100];
-        for (int i = 0; i < s.length; i++) {
-            s[i] = "" + i;
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
-
-        mLoadListView.setAdapter(adapter);
-
-        XmShortCutUtil.getInstance(this).createShortCut(MainActivity.class);
-
+        setContentView(R.layout.activity_main);
     }
 
 
