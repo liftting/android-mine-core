@@ -31,8 +31,8 @@ public class ConnectionLog
         	logDir.mkdirs();
         	// do not allow media scan
             new File(logDir, ".nomedia").createNewFile();
-        }        
-		
+        }
+
 		open(logDir.getAbsolutePath() + "/push.log");
 	}
 

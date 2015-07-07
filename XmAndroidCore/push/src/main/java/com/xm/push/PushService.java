@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.util.Log;
 
 /* 
@@ -34,7 +35,7 @@ public class PushService extends Service {
     public static final String TAG = "DemoPushService";
 
     // the IP address, where your MQTT broker is running.
-    private static final String MQTT_HOST = "209.124.50.174";
+    private static final String MQTT_HOST = "172.16.1.44";
     // the port at which the broker is running.
     private static int MQTT_BROKER_PORT_NUM = 1883;
     // Let's not use the MQTT persistence.
@@ -121,6 +122,13 @@ public class PushService extends Service {
 
     @Override
     public void onCreate() {
+        // Android 9以上的版本需要添加这个才能在网络connection那里不会出现 返回null问题
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
         super.onCreate();
 
         log("Creating service");
@@ -139,7 +147,7 @@ public class PushService extends Service {
         mNotifMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		/* If our process was reaped by the system for any reason we need
-		 * to restore our state with merely a call to onCreate.  We record
+         * to restore our state with merely a call to onCreate.  We record
 		 * the last "started" value and restore it here if necessary. */
         handleCrashedService();
     }
