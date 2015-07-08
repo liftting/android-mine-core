@@ -17,10 +17,9 @@ import com.xm.webview.R;
 
 /**
  * Created by wm on 15/7/2.
- *
+ * <p/>
  * headerview 滑动组件
  * 支持连续不间断滑动效果
- *
  */
 public class ScrollContainer extends LinearLayout {
 
@@ -112,18 +111,33 @@ public class ScrollContainer extends LinearLayout {
             case MotionEvent.ACTION_DOWN:
                 lastY = ev.getY();
 
+                if (getScrollY() < mTopViewHeight && Math.abs(dy) > viewPagerTouchSlop) {
+                    MotionEvent ev2 = MotionEvent.obtain(ev);
+                    ev2.setAction(MotionEvent.ACTION_DOWN);
+                    onTouchEvent(ev2);
+                    ev2.recycle();
+                    return true;
+                }
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 logger.d("move:dy:" + dy + " and getScrollY:" + getScrollY() + " and headerView height : " + mHeaderView.getMeasuredHeight() + " and headState:" + headState);
 
 
                 if (Math.abs(dy) > viewPagerTouchSlop) {
+                    // 开始滑动了
                     mDragging = true;
                 }
 
-                if (headState == STATE_CHANGE_TO_SEE || headState == STATE_CHANGE_TO_HIDE) {
+                if (mDragging && (headState == STATE_CHANGE_TO_SEE || headState == STATE_CHANGE_TO_HIDE)) {
                     headState = STATE_CHILD_MOVE;
                     return false;
+                }
+
+                if (dy < 0 && (headState == STATE_DEFAULT ||
+                        headState == STATE_MOVING)) {
+                    // 上滑动
+                    return true;
                 }
 
                 if ((headState == STATE_DEFAULT ||
@@ -173,6 +187,7 @@ public class ScrollContainer extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
+
                 float dy = y - lastY;
 
                 if (!mDragging && Math.abs(dy) > viewPagerTouchSlop) {
@@ -201,6 +216,12 @@ public class ScrollContainer extends LinearLayout {
         }
 
         return super.onTouchEvent(event);
+    }
+
+    public void showTopView() {
+        if (getScrollY() <= mTopViewHeight) {
+            scrollBy(0, -(mTopViewHeight - getScrollY()));
+        }
     }
 
     private boolean isNeedSendEvent() {

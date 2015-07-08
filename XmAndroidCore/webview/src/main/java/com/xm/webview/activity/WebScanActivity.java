@@ -40,6 +40,7 @@ import com.xm.webview.controller.WebScanHandler;
 import com.xm.webview.swipelist.SwipeDismissListViewTouchListener;
 import com.xm.webview.util.Constants;
 import com.xm.webview.view.AnimatedProgressBar;
+import com.xm.webview.view.ScrollContainer;
 import com.xm.webview.view.SwipeBackView;
 import com.xm.webview.view.WebTitleView;
 import com.xm.webview.view.XmWebView;
@@ -69,6 +70,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
     private ListView mSwipeListView;
     private View mWebMultiContainer;
     private XmWebViewListAdapter mMultiAdapter;
+    private ScrollContainer mScrollContainer;
 
     //menu 的容器
     private LinearLayout mWebMenuContainer;
@@ -119,6 +121,7 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
         mWebMultiContainer = findViewById(R.id.web_multi_container);
         mSwipeListView = (ListView) findViewById(R.id.web_swipe_listview);
+        mScrollContainer = (ScrollContainer) findViewById(R.id.scrollContainerView);
 
         WebViewBean bean = getWrapWebView();
         mCurrentView = bean.getWebView();
@@ -249,6 +252,10 @@ public class WebScanActivity extends Activity implements WebScanHandler, TitleHa
 
     @Override
     public void updateUrl(String title, boolean shortUrl) {
+
+        //
+//        mScrollContainer.showTopView();
+
         if (title == null || mTitleViewFloat == null) {
             return;
         }
