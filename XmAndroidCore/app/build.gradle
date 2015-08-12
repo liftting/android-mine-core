@@ -24,4 +24,9 @@ dependencies {
     compile project(':zxing')
     compile project(':log')
     compile project(':util')
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:cardview-v7:22.2.0'
+
+
 }

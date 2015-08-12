@@ -1,1 +1,1 @@
-include ':app', ':zxing', ':webview', ':log', ':util', ':ui', ':push'
+include ':app', ':zxing', ':webview', ':log', ':util', ':ui', ':push', ':cmt', ':app2'

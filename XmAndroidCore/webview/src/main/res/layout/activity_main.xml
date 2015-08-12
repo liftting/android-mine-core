@@ -50,6 +50,11 @@
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="28dp"
+                    android:background="#ffffff00" />
+
                 <!-- 店铺商品列表 -->
                 <com.xm.webview.view.ScrollChangeFrameLayout
                     android:id="@+id/scorllView"

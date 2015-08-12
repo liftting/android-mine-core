@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/swip_ct_data_show"
+        android:layout_above="@+id/ly_toolbar_bottom">
+
+        <ListView
+            android:id="@+id/list_ct_data_show"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="#000000"/>
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:id="@+id/ly_toolbar_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            style="@style/ct_chat_input_style"
+            android:id="@+id/ed_ct_input_text"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/btn_ct_send" />
+
+        <Button
+            android:id="@+id/btn_ct_send"
+            android:layout_alignParentRight="true"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="发送"
+            android:onClick="send"
+            android:background="@drawable/ct_send_bg" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
