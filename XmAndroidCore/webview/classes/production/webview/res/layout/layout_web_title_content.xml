@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:orientation="vertical"
+    android:id="@+id/ly_webview_container_title"
+    android:gravity="center_vertical"
+    android:background="@color/black"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <com.xm.webview.view.WebTitleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title_view_container" />
+
+    <com.xm.webview.view.AnimatedProgressBar
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        custom:backgroundColor="#00000000"
+        custom:bidirectionalAnimate="false"
+        custom:progressColor="@color/content_red_light" />
+
+</LinearLayout>

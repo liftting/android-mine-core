@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="visible"
+    android:background="@drawable/web_search_title"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/img_web_address_collect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/address_bookmark_star"
+        android:layout_centerVertical="true" />
+
+    <AutoCompleteTextView
+        android:layout_toRightOf="@+id/img_web_address_collect"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/tv_web_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:textSize="14sp"
+        android:gravity="left|center_vertical"
+        android:hint="请输入关键词"
+        android:imeOptions="actionGo"
+        android:inputType="textUri"
+        android:paddingBottom="1dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:paddingTop="1dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textCursorDrawable="@null"></AutoCompleteTextView>
+
+</RelativeLayout>
